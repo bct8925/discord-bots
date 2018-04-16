@@ -12,10 +12,12 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import sx.blah.discord.api.events.EventSubscriber;
+import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MentionEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.EmbedBuilder;
 
 public class FortListener extends MessageListener {
 
@@ -113,30 +115,54 @@ public class FortListener extends MessageListener {
           .split(" ")[0].equalsIgnoreCase(main.getSymbol() + "update")) {
         updatePlayers();
       }
+
+      else if (message.split(" ")[0].equalsIgnoreCase(main.getSymbol() + "test")) {
+        String userName = message.split(" ")[1];
+        FortniteAccount account = getAccount(userName);
+        if (account != null) {
+          Map<Player, FortniteAccount> temp = new HashMap<>();
+          temp.put(new Player(userName, account), account);
+          DankUtils.sendMessage(
+              winnerMessage(temp), user.getOrCreatePMChannel());
+        } else {
+          DankUtils
+              .sendMessage(user.mention() + " An error occurred!", user.getOrCreatePMChannel());
+        }
+      }
     }
   }
 
   private synchronized void updatePlayers() {
-    Map<String, Integer> winners = new HashMap<>();
+    Map<Player, FortniteAccount> winners = new HashMap<>();
     for (String username : trackedPlayers.keySet()) {
       Player player = trackedPlayers.get(username);
       FortniteAccount account = getAccount(username);
       if (account != null) {
         if (player.winHappened(account)) {
-          winners.put(username, player.getNewKills(account));
+          winners.put(player, account);
         }
-        player.update(account);
+        trackedPlayers.put(username, new Player(username, account));
       }
     }
 
     if (!winners.isEmpty()) {
-      String response = "Winner Winner Chicken Dinner!\n";
-      for (String username : winners.keySet()) {
-        response += username + ": " + winners.get(username) + " kills\n";
-      }
-      response += "---------------------------------------------------------------";
-      DankUtils.sendMessage(response, DankUtils.getChannelByName(main.getGuild(), "trophy_room"));
+      DankUtils.sendMessage(
+          winnerMessage(winners), DankUtils.getChannelByName(main.getGuild(), "trophy_room"));
     }
+  }
+
+  private EmbedObject winnerMessage(Map<Player, FortniteAccount> winners) {
+    EmbedBuilder builder = new EmbedBuilder();
+    builder.withColor(66, 188, 244);
+    builder.withImage("https://cdn.discordapp.com/attachments/434758225640816641/435235573398241281/logo.png");
+
+    String response = "";
+    for (Player p : winners.keySet()) {
+      response += p.getUsername() + ": " + p.getNewKills(winners.get(p)) + " kills\n";
+    }
+    builder.appendField("#1 Victory Royale!", "***" + response + "***", false);
+
+    return builder.build();
   }
 
   private synchronized boolean trackPlayer(String username) {

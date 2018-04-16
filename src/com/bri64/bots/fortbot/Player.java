@@ -50,7 +50,7 @@ public class Player {
     return account.getKills() - kills;
   }
 
-  public void update(FortniteAccount account) {
+  private void update(FortniteAccount account) {
     this.kills = account.getKills();
     this.matches = account.getMatches();
     this.wins = account.getWins();
