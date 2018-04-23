@@ -3,6 +3,7 @@ package com.bri64.bots.fortbot;
 import com.bri64.bots.Bot;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.util.RequestBuffer;
 
 public class FortBot extends Bot {
 
@@ -25,6 +26,8 @@ public class FortBot extends Bot {
 
     // Register listeners
     registerListeners();
+
+    RequestBuffer.request(() -> client.changePlayingText("@me for help!"));
   }
 
   public IGuild getGuild() {

@@ -1,6 +1,6 @@
 package com.bri64.bots.fortbot;
 
-import com.bri64.bots.DankUtils;
+import com.bri64.bots.BotUtils;
 import com.bri64.bots.MessageListener;
 import com.bri64.bots.fortbot.json.FortniteAccount;
 import com.google.gson.Gson;
@@ -41,13 +41,13 @@ public class FortListener extends MessageListener {
 
     new Thread(() -> {
       while (!main.isReady()) {
-        DankUtils.waiting();
+        BotUtils.waiting();
       }
 
-      trackPlayer("bri64");
-      trackPlayer("thedukenator");
-      trackPlayer("bluemidget14");
-      trackPlayer("ttimhcsnad");
+      trackPlayer("pc/Ahdrick");
+      trackPlayer("pc/Abbádon");
+      trackPlayer("pc/CallsignWhisper");
+      trackPlayer("psn/glymzz");
 
       new Timer().schedule(new TimerTask() {
         @Override
@@ -65,7 +65,7 @@ public class FortListener extends MessageListener {
         .contains("@here")) {
       IUser user = event.getMessage().getAuthor();
       IChannel channel = user.getOrCreatePMChannel();
-      DankUtils.sendMessage(help, channel);
+      BotUtils.sendMessage(help, channel);
     }
   }
 
@@ -83,9 +83,9 @@ public class FortListener extends MessageListener {
         String userName = message.split(" ")[1];
         FortniteAccount account = getAccount(userName);
         if (account != null) {
-          DankUtils.sendMessage("```\n" + account.toString() + "```", user.getOrCreatePMChannel());
+          BotUtils.sendMessage("```\n" + account.toString() + "```", user.getOrCreatePMChannel());
         } else {
-          DankUtils
+          BotUtils
               .sendMessage(user.mention() + " An error occurred!", user.getOrCreatePMChannel());
         }
       }
@@ -94,10 +94,10 @@ public class FortListener extends MessageListener {
       else if (message.split(" ")[0].equalsIgnoreCase(main.getSymbol() + "track")) {
         String userName = message.split(" ")[1];
         if (trackPlayer(userName)) {
-          DankUtils
+          BotUtils
               .sendMessage(user.mention() + " Tracking successful.", user.getOrCreatePMChannel());
         } else {
-          DankUtils
+          BotUtils
               .sendMessage(user.mention() + " An error occurred!", user.getOrCreatePMChannel());
         }
       }
@@ -106,8 +106,9 @@ public class FortListener extends MessageListener {
       else if (message.split(" ")[0].equalsIgnoreCase(main.getSymbol() + "untrack")) {
         String userName = message.split(" ")[1];
         trackedPlayers.remove(userName);
-        DankUtils
+        BotUtils
             .sendMessage(user.mention() + " Untracking successful.", user.getOrCreatePMChannel());
+        BotUtils.log(main, " " + userName+ " untracked.");
       }
 
       // Update/Winner
@@ -122,7 +123,8 @@ public class FortListener extends MessageListener {
         for (int i = 1; i < userNames.length; i += 2) {
           temp.put(userNames[i], Integer.parseInt(userNames[i + 1]));
         }
-        DankUtils.sendMessage(testMessage(temp), DankUtils.getChannelByName(main.getGuild(), "trophy_room"));
+        BotUtils
+            .sendMessage(testMessage(temp), BotUtils.getChannelByName(main.getGuild(), "trophy-room"));
       }
     }
   }
@@ -141,8 +143,8 @@ public class FortListener extends MessageListener {
     }
 
     if (!winners.isEmpty()) {
-      DankUtils.sendMessage(
-          winnerMessage(winners), DankUtils.getChannelByName(main.getGuild(), "trophy_room"));
+      BotUtils.sendMessage(
+          winnerMessage(winners), BotUtils.getChannelByName(main.getGuild(), "trophy-room"));
     }
   }
 
@@ -153,7 +155,7 @@ public class FortListener extends MessageListener {
 
     String response = "";
     for (Player p : winners.keySet()) {
-      response += p.getUsername() + ": " + p.getNewKills(winners.get(p)) + " kills\n";
+      response += p.getDisplayName(winners.get(p)) + ": " + p.getNewKills(winners.get(p)) + " kills\n";
     }
     builder.appendField("#1 Victory Royale!", "***" + response + "***", false);
 
@@ -178,6 +180,7 @@ public class FortListener extends MessageListener {
     FortniteAccount account = getAccount(username);
     if (account != null) {
       trackedPlayers.put(username, new Player(username, account));
+      BotUtils.log(main, " " + username + " tracked.");
       return true;
     }
     return false;
@@ -188,7 +191,7 @@ public class FortListener extends MessageListener {
       Thread.sleep(2001);
 
       OkHttpClient client = new OkHttpClient();
-      String API_URL = "https://api.fortnitetracker.com/v1/profile/pc/";
+      String API_URL = "https://api.fortnitetracker.com/v1/profile/";
       Request request = new Request.Builder()
           .url(API_URL + userName)
           .get()
@@ -197,7 +200,11 @@ public class FortListener extends MessageListener {
           .build();
       Response response = client.newCall(request).execute();
       String json = response.body().string();
-      return new Gson().fromJson(json, FortniteAccount.class);
+      FortniteAccount account = new Gson().fromJson(json, FortniteAccount.class);
+      if (account.getError() != null) {
+        return null;
+      }
+      return account;
     } catch (Exception e) {
       return null;
     }

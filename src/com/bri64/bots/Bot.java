@@ -30,7 +30,7 @@ public abstract class Bot {
   protected void login() {
     client.login();
     while (!botListener.isReady()) {
-      DankUtils.waiting();
+      BotUtils.waiting();
     }
   }
 

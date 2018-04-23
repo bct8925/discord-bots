@@ -11,7 +11,7 @@ import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.util.RequestBuffer;
 
 @SuppressWarnings("WeakerAccess")
-public class DankUtils {
+public class BotUtils {
 
   public static void log(Bot main, String message) {
     System.out.println(

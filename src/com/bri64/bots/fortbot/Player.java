@@ -18,6 +18,10 @@ public class Player {
     return username;
   }
 
+  public String getDisplayName(FortniteAccount account) {
+    return account.getEpicUserHandle();
+  }
+
   public int getKills() {
     return kills;
   }

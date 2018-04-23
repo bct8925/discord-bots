@@ -12,6 +12,7 @@ public class FortniteAccount {
   private DivisionStats stats;
   private List<LifeTimeStat> lifeTimeStats;
   private List<RecentMatch> recentMatches;
+  private String error;
 
   public FortniteAccount() {
   }
@@ -46,6 +47,10 @@ public class FortniteAccount {
 
   public List<RecentMatch> getRecentMatches() {
     return recentMatches;
+  }
+
+  public String getError() {
+    return error;
   }
 
   public int getKills() {
