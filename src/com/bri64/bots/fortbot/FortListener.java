@@ -30,10 +30,10 @@ public class FortListener extends MessageListener {
     this.help = "```" +
         "FortBot:\n" +
         "\t@FortBot = Help Command\n" +
-        "\t!stats [username] = Check player stats\n" +
-        "\t!track [username] = Start tracking player stats\n" +
-        "\t!untrack [username] = Stop tracking player stats\n" +
-        "\t!winner = Update stats manually\n" +
+        "\t!stats [platform/username] = Check player stats\n" +
+        "\t!track [platform/username] = Start tracking player stats\n" +
+        "\t!untrack [platform/username] = Stop tracking player stats\n" +
+        "\t!winner = Update stats after a win\n" +
         "\t!update = Update stats manually" +
         "```";
 
