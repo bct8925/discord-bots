@@ -117,17 +117,12 @@ public class FortListener extends MessageListener {
       }
 
       else if (message.split(" ")[0].equalsIgnoreCase(main.getSymbol() + "test")) {
-        String userName = message.split(" ")[1];
-        FortniteAccount account = getAccount(userName);
-        if (account != null) {
-          Map<Player, FortniteAccount> temp = new HashMap<>();
-          temp.put(new Player(userName, account), account);
-          DankUtils.sendMessage(
-              winnerMessage(temp), user.getOrCreatePMChannel());
-        } else {
-          DankUtils
-              .sendMessage(user.mention() + " An error occurred!", user.getOrCreatePMChannel());
+        String[] userNames = message.split(" ");
+        Map<String, Integer> temp = new HashMap<>();
+        for (int i = 1; i < userNames.length; i += 2) {
+          temp.put(userNames[i], Integer.parseInt(userNames[i + 1]));
         }
+        DankUtils.sendMessage(testMessage(temp), DankUtils.getChannelByName(main.getGuild(), "trophy_room"));
       }
     }
   }
@@ -159,6 +154,20 @@ public class FortListener extends MessageListener {
     String response = "";
     for (Player p : winners.keySet()) {
       response += p.getUsername() + ": " + p.getNewKills(winners.get(p)) + " kills\n";
+    }
+    builder.appendField("#1 Victory Royale!", "***" + response + "***", false);
+
+    return builder.build();
+  }
+
+  private EmbedObject testMessage(Map<String, Integer> winners) {
+    EmbedBuilder builder = new EmbedBuilder();
+    builder.withColor(66, 188, 244);
+    builder.withImage("https://cdn.discordapp.com/attachments/434758225640816641/435235573398241281/logo.png");
+
+    String response = "";
+    for (String username : winners.keySet()) {
+      response += username + ": " + winners.get(username) + " kills\n";
     }
     builder.appendField("#1 Victory Royale!", "***" + response + "***", false);
 
