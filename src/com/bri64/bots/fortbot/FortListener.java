@@ -21,6 +21,10 @@ import sx.blah.discord.util.EmbedBuilder;
 
 public class FortListener extends MessageListener {
 
+  private static String API_KEY = "5f1ca39c-d3f0-4f27-9bb0-1d5832ff3f39";
+  private static String CHANNEL = "trophy_room";
+  private static String IMG_URL = "https://cdn.discordapp.com/attachments/434758225640816641/435235573398241281/logo.png";
+  
   private FortBot main;
 
   private Map<String, Player> trackedPlayers;
@@ -44,10 +48,18 @@ public class FortListener extends MessageListener {
         BotUtils.waiting();
       }
 
+      trackPlayer("pc/bri64");
+      trackPlayer("pc/thedukenator");
+      trackPlayer("pc/Stoquertk");
+      trackPlayer("pc/ttimhcsnad");
+      trackPlayer("pc/lwizzle9dizzle");
+
+      /*
       trackPlayer("pc/Ahdrick");
       trackPlayer("pc/Abbádon");
       trackPlayer("pc/CallsignWhisper");
       trackPlayer("psn/glymzz");
+      */
 
       new Timer().schedule(new TimerTask() {
         @Override
@@ -124,7 +136,7 @@ public class FortListener extends MessageListener {
           temp.put(userNames[i], Integer.parseInt(userNames[i + 1]));
         }
         BotUtils
-            .sendMessage(testMessage(temp), BotUtils.getChannelByName(main.getGuild(), "trophy-room"));
+            .sendMessage(testMessage(temp), BotUtils.getChannelByName(main.getGuild(), CHANNEL));
       }
     }
   }
@@ -144,18 +156,19 @@ public class FortListener extends MessageListener {
 
     if (!winners.isEmpty()) {
       BotUtils.sendMessage(
-          winnerMessage(winners), BotUtils.getChannelByName(main.getGuild(), "trophy-room"));
+          winnerMessage(winners), BotUtils.getChannelByName(main.getGuild(), CHANNEL));
     }
   }
 
   private EmbedObject winnerMessage(Map<Player, FortniteAccount> winners) {
     EmbedBuilder builder = new EmbedBuilder();
     builder.withColor(66, 188, 244);
-    builder.withImage("https://cdn.discordapp.com/attachments/434758225640816641/435235573398241281/logo.png");
+    builder.withImage(IMG_URL);
 
-    String response = "";
+    StringBuilder response = new StringBuilder();
     for (Player p : winners.keySet()) {
-      response += p.getDisplayName(winners.get(p)) + ": " + p.getNewKills(winners.get(p)) + " kills\n";
+      response.append(p.getDisplayName(winners.get(p))).append(": ")
+          .append(p.getNewKills(winners.get(p))).append(" kills\n");
     }
     builder.appendField("#1 Victory Royale!", "***" + response + "***", false);
 
@@ -165,11 +178,11 @@ public class FortListener extends MessageListener {
   private EmbedObject testMessage(Map<String, Integer> winners) {
     EmbedBuilder builder = new EmbedBuilder();
     builder.withColor(66, 188, 244);
-    builder.withImage("https://cdn.discordapp.com/attachments/434758225640816641/435235573398241281/logo.png");
+    builder.withImage(IMG_URL);
 
-    String response = "";
+    StringBuilder response = new StringBuilder();
     for (String username : winners.keySet()) {
-      response += username + ": " + winners.get(username) + " kills\n";
+      response.append(username).append(": ").append(winners.get(username)).append(" kills\n");
     }
     builder.appendField("#1 Victory Royale!", "***" + response + "***", false);
 
@@ -195,7 +208,7 @@ public class FortListener extends MessageListener {
       Request request = new Request.Builder()
           .url(API_URL + userName)
           .get()
-          .addHeader("TRN-Api-Key", "5f1ca39c-d3f0-4f27-9bb0-1d5832ff3f39")
+          .addHeader("TRN-Api-Key", API_KEY)
           .addHeader("Accept", "application/json")
           .build();
       Response response = client.newCall(request).execute();
