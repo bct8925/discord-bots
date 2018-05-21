@@ -22,8 +22,11 @@ import sx.blah.discord.util.EmbedBuilder;
 public class FortListener extends MessageListener {
 
   private static String API_KEY = "5f1ca39c-d3f0-4f27-9bb0-1d5832ff3f39";
-  private static String CHANNEL = "trophy_room";
   private static String IMG_URL = "https://cdn.discordapp.com/attachments/434758225640816641/435235573398241281/logo.png";
+
+  private static String CHANNEL = "trophy_room";
+  private static int ONE_MINUTE = 60000;
+  private static int UPDATE_DELAY = ONE_MINUTE * 2;
   
   private FortBot main;
 
@@ -66,7 +69,7 @@ public class FortListener extends MessageListener {
         public void run() {
           updatePlayers();
         }
-      }, 5000, 300000);
+      }, 5000, UPDATE_DELAY);
     }).start();
   }
 
@@ -142,21 +145,47 @@ public class FortListener extends MessageListener {
   }
 
   private synchronized void updatePlayers() {
-    Map<Player, FortniteAccount> winners = new HashMap<>();
+    boolean won = false;
+    Map<String, FortniteAccount> updatedStats = new HashMap<>();
     for (String username : trackedPlayers.keySet()) {
       Player player = trackedPlayers.get(username);
       FortniteAccount account = getAccount(username);
       if (account != null) {
+        updatedStats.put(username, account);
         if (player.winHappened(account)) {
-          winners.put(player, account);
+          won = true;
         }
-        trackedPlayers.put(username, new Player(username, account));
       }
     }
 
-    if (!winners.isEmpty()) {
+    // Win, recheck for wins
+    if (won) {
+      try {
+        Thread.sleep(ONE_MINUTE);
+      } catch (Exception ignored) {
+      }
+
+      Map<Player, FortniteAccount> winners = new HashMap<>();
+      for (String username : trackedPlayers.keySet()) {
+        Player player = trackedPlayers.get(username);
+        FortniteAccount account = getAccount(username);
+        if (account != null) {
+          if (player.winHappened(account)) {
+            winners.put(player, account);
+          }
+          trackedPlayers.put(username, new Player(username, account));
+        }
+      }
+
       BotUtils.sendMessage(
           winnerMessage(winners), BotUtils.getChannelByName(main.getGuild(), CHANNEL));
+    }
+
+    // No wins, update stats
+    else {
+      for (String username : trackedPlayers.keySet()) {
+        trackedPlayers.put(username, new Player(username, updatedStats.get(username)));
+      }
     }
   }
 
