@@ -95,35 +95,37 @@ public class FortListener extends MessageListener {
 
       // Stats
       if (message.split(" ")[0].equalsIgnoreCase(main.getSymbol() + "stats")) {
-        String userName = message.split(" ")[1];
-        FortniteAccount account = getAccount(userName);
+        String username = message.split(" ")[1];
+        FortniteAccount account = getAccount(username);
         if (account != null) {
           BotUtils.sendMessage("```\n" + account.toString() + "```", user.getOrCreatePMChannel());
         } else {
           BotUtils
-              .sendMessage(user.mention() + " An error occurred!", user.getOrCreatePMChannel());
+              .sendMessage(user.mention() + " Could not load " + username + "'s stats",
+                  user.getOrCreatePMChannel());
         }
       }
 
       // Track
       else if (message.split(" ")[0].equalsIgnoreCase(main.getSymbol() + "track")) {
-        String userName = message.split(" ")[1];
-        if (trackPlayer(userName)) {
+        String username = message.split(" ")[1];
+        if (trackPlayer(username)) {
           BotUtils
               .sendMessage(user.mention() + " Tracking successful.", user.getOrCreatePMChannel());
         } else {
           BotUtils
-              .sendMessage(user.mention() + " An error occurred!", user.getOrCreatePMChannel());
+              .sendMessage(user.mention() + " Could not load " + username + "'s stats",
+                  user.getOrCreatePMChannel());
         }
       }
 
       // Untrack
       else if (message.split(" ")[0].equalsIgnoreCase(main.getSymbol() + "untrack")) {
-        String userName = message.split(" ")[1];
-        trackedPlayers.remove(userName);
+        String username = message.split(" ")[1];
+        trackedPlayers.remove(username);
         BotUtils
             .sendMessage(user.mention() + " Untracking successful.", user.getOrCreatePMChannel());
-        BotUtils.log(main, " " + userName+ " untracked.");
+        BotUtils.log(main, " " + username + " untracked.");
       }
 
       // Update/Winner
@@ -133,10 +135,10 @@ public class FortListener extends MessageListener {
       }
 
       else if (message.split(" ")[0].equalsIgnoreCase(main.getSymbol() + "test")) {
-        String[] userNames = message.split(" ");
+        String[] usernames = message.split(" ");
         Map<String, Integer> temp = new HashMap<>();
-        for (int i = 1; i < userNames.length; i += 2) {
-          temp.put(userNames[i], Integer.parseInt(userNames[i + 1]));
+        for (int i = 1; i < usernames.length; i += 2) {
+          temp.put(usernames[i], Integer.parseInt(usernames[i + 1]));
         }
         BotUtils
             .sendMessage(testMessage(temp), BotUtils.getChannelByName(main.getGuild(), CHANNEL));
@@ -185,7 +187,7 @@ public class FortListener extends MessageListener {
 
     // No wins, update stats
     else {
-      for (String username : trackedPlayers.keySet()) {
+      for (String username : updatedStats.keySet()) {
         trackedPlayers.put(username, new Player(username, updatedStats.get(username)));
       }
     }
@@ -230,14 +232,14 @@ public class FortListener extends MessageListener {
     return false;
   }
 
-  private synchronized FortniteAccount getAccount(String userName) {
+  private synchronized FortniteAccount getAccount(String username) {
     try {
       Thread.sleep(2001);
 
       OkHttpClient client = new OkHttpClient();
       String API_URL = "https://api.fortnitetracker.com/v1/profile/";
       Request request = new Request.Builder()
-          .url(API_URL + userName)
+          .url(API_URL + username)
           .get()
           .addHeader("TRN-Api-Key", API_KEY)
           .addHeader("Accept", "application/json")
@@ -250,6 +252,7 @@ public class FortListener extends MessageListener {
       }
       return account;
     } catch (Exception e) {
+      BotUtils.log(main, " [Error] Could not load " + username + "'s stats");
       return null;
     }
   }
