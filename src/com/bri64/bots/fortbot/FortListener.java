@@ -145,6 +145,7 @@ public class FortListener extends MessageListener {
   }
 
   private synchronized void updatePlayers() {
+    BotUtils.log(main, " Updating stats...");
     boolean won = false;
     Map<String, FortniteAccount> updatedStats = new HashMap<>();
     for (String username : trackedPlayers.keySet()) {
@@ -160,6 +161,7 @@ public class FortListener extends MessageListener {
 
     // Win, recheck for wins
     if (won) {
+      BotUtils.log(main, " Wins detected");
       try {
         Thread.sleep(ONE_MINUTE);
       } catch (Exception ignored) {
