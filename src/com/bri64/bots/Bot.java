@@ -3,8 +3,10 @@ package com.bri64.bots;
 import java.util.List;
 import org.apache.commons.text.StringEscapeUtils;
 import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.handle.obj.ActivityType;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
+import sx.blah.discord.handle.obj.StatusType;
 import sx.blah.discord.util.RequestBuffer;
 
 public abstract class Bot {
@@ -35,7 +37,8 @@ public abstract class Bot {
   }
 
   public void setStatus(String status) {
-    RequestBuffer.request(() -> client.changePlayingText(status));
+    RequestBuffer
+        .request(() -> client.changePresence(StatusType.ONLINE, ActivityType.LISTENING, status));
   }
 
   public IUser getUser() {

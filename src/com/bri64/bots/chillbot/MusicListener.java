@@ -7,8 +7,10 @@ import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MentionEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelMoveEvent;
+import sx.blah.discord.handle.obj.ICategory;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.IVoiceChannel;
 
 @SuppressWarnings("WeakerAccess")
 public class MusicListener extends MessageListener {
@@ -165,6 +167,15 @@ public class MusicListener extends MessageListener {
         && event.getNewChannel() == main.getGuild().getAFKChannel()) {
       main.getMusicScheduler().stop();
       main.leaveChannels();
+    } else if (main.isReady() && event.getNewChannel().getName()
+        .equalsIgnoreCase("~~~ /kick ~~~")) {
+      //System.out.println(event.getNewChannel().getRoleOverrides());
+      event.getNewChannel().delete();
+      IVoiceChannel newChannel = main.getGuild().createVoiceChannel("~~~ /kick ~~~");
+      ICategory cata = main.getGuild().getCategoriesByName("Kick").get(0);
+      newChannel.changeCategory(cata);
+      //IRole everyone = main.getGuild().getEveryoneRole();
+      //newChannel.overrideRolePermissions(everyone, null, EnumSet.of(Permissions.READ_MESSAGES, Permissions.VOICE_CONNECT));
     }
   }
 }

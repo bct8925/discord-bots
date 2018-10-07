@@ -2,9 +2,12 @@ package com.bri64.bots.fortbot;
 
 import com.bri64.bots.Bot;
 import sx.blah.discord.api.ClientBuilder;
+import sx.blah.discord.handle.obj.ActivityType;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.StatusType;
 import sx.blah.discord.util.RequestBuffer;
 
+@SuppressWarnings("WeakerAccess")
 public class FortBot extends Bot {
 
   private IGuild guild;
@@ -27,7 +30,8 @@ public class FortBot extends Bot {
     // Register listeners
     registerListeners();
 
-    RequestBuffer.request(() -> client.changePlayingText("@me for help!"));
+    RequestBuffer.request(
+        () -> client.changePresence(StatusType.ONLINE, ActivityType.LISTENING, "@me for help!"));
   }
 
   public IGuild getGuild() {

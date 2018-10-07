@@ -75,7 +75,7 @@ public class MusicScheduler extends AudioEventAdapter {
     audioPlayer = playerManager.createPlayer();
     audioPlayer.addListener(this);
     main.getGuild().getAudioManager().setAudioProvider(new AudioProvider(audioPlayer));
-    audioPlayer.setVolume(20);
+    audioPlayer.setVolume(30);
   }
 
   // Functions
