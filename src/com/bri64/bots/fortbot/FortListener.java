@@ -19,6 +19,7 @@ import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
 
+@SuppressWarnings({"WeakerAccess", "FieldCanBeLocal"})
 public class FortListener extends MessageListener {
 
   private static String API_KEY = "5f1ca39c-d3f0-4f27-9bb0-1d5832ff3f39";
@@ -27,7 +28,7 @@ public class FortListener extends MessageListener {
   private static String CHANNEL = "trophy_room";
   private static int ONE_MINUTE = 60000;
   private static int UPDATE_DELAY = ONE_MINUTE * 2;
-  
+
   private FortBot main;
 
   private Map<String, Player> trackedPlayers;
@@ -132,9 +133,7 @@ public class FortListener extends MessageListener {
       else if (message.split(" ")[0].equalsIgnoreCase(main.getSymbol() + "winner") || message
           .split(" ")[0].equalsIgnoreCase(main.getSymbol() + "update")) {
         updatePlayers();
-      }
-
-      else if (message.split(" ")[0].equalsIgnoreCase(main.getSymbol() + "test")) {
+      } else if (message.split(" ")[0].equalsIgnoreCase(main.getSymbol() + "test")) {
         String[] usernames = message.split(" ");
         Map<String, Integer> temp = new HashMap<>();
         for (int i = 1; i < usernames.length; i += 2) {
@@ -232,6 +231,7 @@ public class FortListener extends MessageListener {
     return false;
   }
 
+  @SuppressWarnings("ConstantConditions")
   private synchronized FortniteAccount getAccount(String username) {
     try {
       Thread.sleep(2001);
