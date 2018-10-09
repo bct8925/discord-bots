@@ -23,7 +23,7 @@ public class MusicScheduler extends AudioEventAdapter {
 
   private DankPlaylist playlist;
   private boolean playing;
-  private boolean loop;
+  private LoopMode loopMode;
   private boolean shuffle;
   private boolean paused;
   private long pause_time;
@@ -34,7 +34,7 @@ public class MusicScheduler extends AudioEventAdapter {
 
     this.playlist = null;
     this.playing = false;
-    this.loop = true;
+    this.loopMode = LoopMode.ALL;
     this.shuffle = true;
 
     this.paused = false;
@@ -47,12 +47,20 @@ public class MusicScheduler extends AudioEventAdapter {
     return playlist.currentInfo();
   }
 
-  public boolean isLoop() {
-    return loop;
+  public String getPlaylistInfo() {
+    return playlist.playlistInfo();
   }
 
-  public void setLoop(boolean loop) {
-    this.loop = loop;
+  public int getPlaylistSize() {
+    return playlist.size();
+  }
+
+  public LoopMode isLoop() {
+    return loopMode;
+  }
+
+  public void setLoop(LoopMode loop) {
+    this.loopMode = loop;
   }
 
   public boolean isShuffle() {
@@ -125,10 +133,11 @@ public class MusicScheduler extends AudioEventAdapter {
               channel.join();
             }
           }
-          playlist.play();
+          playlist.goStart();
+          play();
         } else if (skip) {
           playlist.goEnd();
-          playlist.play();
+          play();
         }
       }
     });
@@ -143,8 +152,53 @@ public class MusicScheduler extends AudioEventAdapter {
     audioPlayer.setPaused(!audioPlayer.isPaused());
   }
 
-  public void skip() {
-    audioPlayer.stopTrack();
+  public void changeTrack(boolean next) {
+    switch (loopMode) {
+      case ALL: // Looping all
+        if (next) {
+          playlist.next();
+        } else {
+          playlist.prev();
+        }
+        play();
+        break;
+
+      case ONE: // Looping one
+        play();
+        break;
+
+      default:  // Not looping
+        // Last track
+        if (playlist.isLast() && next) {
+          stop();
+        } else if (playlist.isFirst() && !next) {
+          stop();
+        }
+        // Any other track
+        else {
+          if (next) {
+            playlist.next();
+          } else {
+            playlist.prev();
+          }
+          play();
+        }
+        break;
+    }
+  }
+
+  public void shuffle() {
+    playlist.shuffle();
+    changeTrack(true);
+  }
+
+  public void remove() {
+    playlist.removeCurrent();
+    play();
+  }
+
+  public boolean seek(String search) {
+    return (playlist != null) && playlist.seek(search);
   }
 
   public void stop() {
@@ -153,10 +207,6 @@ public class MusicScheduler extends AudioEventAdapter {
     audioPlayer.stopTrack();
     main.leaveChannels();
     playing = false;
-  }
-
-  public boolean seek(String search) {
-    return (playlist != null) && playlist.seek(search);
   }
 
   // Event listeners
@@ -179,34 +229,15 @@ public class MusicScheduler extends AudioEventAdapter {
   @Override
   public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
     if (endReason != AudioTrackEndReason.REPLACED && !paused) {
-      // Not looping
-      if (!loop) {
-        // Last track in playlist
-        if (playlist.isLast()) {
-          stop();
-        }
-        // Any other track
-        else {
-          playlist.next();
-          play();
-        }
-      }
-      // Looping
-      else {
-        // Last track
-        if (playlist.isLast()) {
-          playlist.goStart();
-        }
-        // Any other track
-        else {
-          playlist.next();
-        }
-        play();
-      }
+      changeTrack(true);
     }
   }
 
   // Helpers
+  void stopTrack() {
+    audioPlayer.stopTrack();
+  }
+
   private DankTrack newTrack(AudioTrack track, String url) {
     return new DankTrack(this, track, url);
   }

@@ -13,6 +13,6 @@ public class StopTrackMarker implements TrackMarkerHandler {
 
   @Override
   public void handle(MarkerState state) {
-    musicScheduler.skip();
+    musicScheduler.stopTrack();
   }
 }

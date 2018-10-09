@@ -13,6 +13,10 @@ public class DankPlaylist implements Iterable<DankTrack> {
   private DankTrack current;
   private AudioPlayer player;
 
+  public int size() {
+    return tracks.size();
+  }
+
   // Initialization
   public DankPlaylist(AudioPlayer player) {
     this.tracks = new LinkedList<>();
@@ -72,7 +76,15 @@ public class DankPlaylist implements Iterable<DankTrack> {
   // Navigation
   public void next() {
     if (current != null) {
-      current = tracks.get(tracks.indexOf(current) + 1);
+      int next = (tracks.indexOf(current) + 1) % tracks.size();
+      current = tracks.get(next);
+    }
+  }
+
+  public void prev() {
+    if (current != null) {
+      int prev = (tracks.indexOf(current) - 1) % tracks.size();
+      current = tracks.get((prev >= 0) ? prev : tracks.size() + prev);
     }
   }
 
@@ -88,9 +100,36 @@ public class DankPlaylist implements Iterable<DankTrack> {
     }
   }
 
+  public void removeCurrent() {
+    if (size() > 1) {
+      DankTrack old = current;
+      next();
+      tracks.remove(old);
+    }
+  }
+
   // Getters
   public DankTrack getCurrent() {
     return current;
+  }
+
+  public String playlistInfo() {
+    StringBuilder result = new StringBuilder();
+    result.append("Current Queue (");
+    result.append(tracks.indexOf(current) + 1);
+    result.append("/");
+    result.append(tracks.size());
+    result.append("):\n");
+
+    int start = tracks.indexOf(current);
+    int end = start + ((tracks.size() - start >= 5) ? 5 : tracks.size() - start);
+    for (int i = start; i < end; i++) {
+      result.append(i + 1);
+      result.append(". ");
+      result.append(tracks.get(i).toString());
+      result.append("\n");
+    }
+    return result.toString();
   }
 
   public String currentText() {
@@ -99,6 +138,10 @@ public class DankPlaylist implements Iterable<DankTrack> {
 
   public String currentInfo() {
     return (current != null) ? current.info() : "null";
+  }
+
+  public boolean isFirst() {
+    return current != null && current.equals(getFirst());
   }
 
   public boolean isLast() {
