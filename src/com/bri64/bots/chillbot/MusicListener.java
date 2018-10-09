@@ -159,9 +159,7 @@ public class MusicListener extends MessageListener {
         if (main.getMusicScheduler().getPlaylistSize() > 1) {
           main.getMusicScheduler().remove();
         } else {
-          BotUtils.sendMessage(
-              user.mention() + " Can't remove last track!",
-              user.getOrCreatePMChannel());
+          main.getMusicScheduler().stop();
         }
       }
 
