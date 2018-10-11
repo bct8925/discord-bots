@@ -5,13 +5,13 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.TrackMarker;
 
 @SuppressWarnings({"WeakerAccess", "BooleanMethodIsAlwaysInverted"})
-class DankTrack {
+class Track {
 
   private MusicScheduler musicScheduler;
   private AudioTrack track;
   private String url;
 
-  DankTrack(MusicScheduler musicScheduler, AudioTrack track, String url) {
+  Track(MusicScheduler musicScheduler, AudioTrack track, String url) {
     this.musicScheduler = musicScheduler;
     this.track = track;
     this.url = url;
@@ -37,7 +37,7 @@ class DankTrack {
 
       clone.setPosition(startTime);
       if (endTime != 0) {
-        clone.setMarker(new TrackMarker(endTime, new StopTrackMarker(musicScheduler)));
+        clone.setMarker(new TrackMarker(endTime, new StopMarker(musicScheduler)));
       }
     }
     return clone;

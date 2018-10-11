@@ -126,7 +126,7 @@ public class FortListener extends MessageListener {
         trackedPlayers.remove(username);
         BotUtils
             .sendMessage(user.mention() + " Untracking successful.", user.getOrCreatePMChannel());
-        BotUtils.log(main, " " + username + " untracked.");
+        BotUtils.log(main, username + " untracked.");
       }
 
       // Update/Winner
@@ -146,7 +146,7 @@ public class FortListener extends MessageListener {
   }
 
   private synchronized void updatePlayers() {
-    BotUtils.log(main, " Updating stats...");
+    BotUtils.log(main, "Updating stats...");
     boolean won = false;
     Map<String, FortniteAccount> updatedStats = new HashMap<>();
     for (String username : trackedPlayers.keySet()) {
@@ -162,7 +162,7 @@ public class FortListener extends MessageListener {
 
     // Win, recheck for wins
     if (won) {
-      BotUtils.log(main, " Wins detected");
+      BotUtils.log(main, "Wins detected");
       try {
         Thread.sleep(ONE_MINUTE);
       } catch (Exception ignored) {
@@ -225,7 +225,7 @@ public class FortListener extends MessageListener {
     FortniteAccount account = getAccount(username);
     if (account != null) {
       trackedPlayers.put(username, new Player(username, account));
-      BotUtils.log(main, " " + username + " tracked.");
+      BotUtils.log(main, username + " tracked.");
       return true;
     }
     return false;
@@ -252,7 +252,7 @@ public class FortListener extends MessageListener {
       }
       return account;
     } catch (Exception e) {
-      BotUtils.log(main, " [Error] Could not load " + username + "'s stats");
+      BotUtils.log(main, "[Error] Could not load " + username + "'s stats");
       return null;
     }
   }

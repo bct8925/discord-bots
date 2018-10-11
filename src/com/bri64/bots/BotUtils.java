@@ -2,6 +2,7 @@ package com.bri64.bots;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
@@ -16,7 +17,7 @@ public class BotUtils {
   public static void log(Bot main, String message) {
     System.out.println(
         new SimpleDateFormat("HH:mm:ss.SSS").format(new Date()) + ": [" + main.getClass()
-            .getSimpleName() + "]" + message);
+            .getSimpleName() + "] - " + message);
   }
 
   public static void waiting() {
@@ -38,18 +39,21 @@ public class BotUtils {
   }
 
   public static IChannel getChannelByName(IGuild guild, String name) {
-    for (IChannel channel : guild.getChannelsByName(name)) {
-      return channel;
+    List<IChannel> channels = guild.getChannelsByName(name);
+    if (channels.size() > 0) {
+      return channels.get(0);
     }
     return null;
   }
 
   public static IVoiceChannel getConnectedChannel(IGuild guild, IUser user) {
     IVoiceChannel channel = null;
-    for (IVoiceChannel chnl : guild.getVoiceChannels()) {
-      if (chnl.getConnectedUsers().contains(user)) {
-        channel = chnl;
-        break;
+    if (guild != null) {
+      for (IVoiceChannel chnl : guild.getVoiceChannels()) {
+        if (chnl.getConnectedUsers().contains(user)) {
+          channel = chnl;
+          break;
+        }
       }
     }
     return channel;

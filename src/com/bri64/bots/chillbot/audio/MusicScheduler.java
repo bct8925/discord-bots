@@ -17,11 +17,11 @@ import sx.blah.discord.handle.obj.IVoiceChannel;
 
 public class MusicScheduler extends AudioEventAdapter {
 
-  private ChillBot main;
+  private ChillBot bot;
   private AudioPlayerManager playerManager;
   private AudioPlayer audioPlayer;
 
-  private DankPlaylist playlist;
+  private Playlist playlist;
   private boolean playing;
   private LoopMode loopMode;
   private boolean shuffle;
@@ -29,8 +29,8 @@ public class MusicScheduler extends AudioEventAdapter {
   private long pause_time;
 
   // Initialization
-  public MusicScheduler(ChillBot main) {
-    this.main = main;
+  public MusicScheduler(ChillBot bot) {
+    this.bot = bot;
 
     this.playlist = null;
     this.playing = false;
@@ -51,30 +51,12 @@ public class MusicScheduler extends AudioEventAdapter {
     return playlist.playlistInfo();
   }
 
-  public int getPlaylistSize() {
-    return playlist.size();
-  }
-
-  public LoopMode isLoop() {
-    return loopMode;
-  }
-
   public void setLoop(LoopMode loop) {
     this.loopMode = loop;
   }
 
-  public boolean isShuffle() {
-    return shuffle;
-  }
-
   public void setShuffle(boolean shuffle) {
     this.shuffle = shuffle;
-  }
-
-  public void getList(IUser user) {
-    for (DankTrack track : playlist) {
-      BotUtils.sendMessage(user.mention() + " " + track.toString(), user.getOrCreatePMChannel());
-    }
   }
 
   private void initAudio() {
@@ -82,8 +64,8 @@ public class MusicScheduler extends AudioEventAdapter {
     AudioSourceManagers.registerRemoteSources(playerManager);
     audioPlayer = playerManager.createPlayer();
     audioPlayer.addListener(this);
-    main.getGuild().getAudioManager().setAudioProvider(new AudioProvider(audioPlayer));
-    audioPlayer.setVolume(30);
+    bot.getGuild().getAudioManager().setAudioProvider(new AudioProvider(audioPlayer));
+    setVolume(30);
   }
 
   // Functions
@@ -92,16 +74,17 @@ public class MusicScheduler extends AudioEventAdapter {
       @Override
       public void trackLoaded(AudioTrack track) {
         if (playlist == null) {
-          playlist = new DankPlaylist(audioPlayer);
+          playlist = new Playlist(audioPlayer);
         }
         playlist.addTrack(newTrack(track, url));
+        BotUtils.log(bot, "Added 1 track(s) to the queue.");
         start();
       }
 
       @Override
       public void playlistLoaded(AudioPlaylist audioPlaylist) {
         if (playlist == null) {
-          playlist = new DankPlaylist(audioPlayer);
+          playlist = new Playlist(audioPlayer);
         }
         for (AudioTrack track : audioPlaylist.getTracks()) {
           playlist.addTrack(newTrack(track, track.getInfo().uri));
@@ -109,6 +92,7 @@ public class MusicScheduler extends AudioEventAdapter {
         if (shuffle) {
           playlist.shuffle();
         }
+        BotUtils.log(bot, "Added " + audioPlaylist.getTracks().size() + " track(s) to the queue.");
         start();
       }
 
@@ -127,10 +111,11 @@ public class MusicScheduler extends AudioEventAdapter {
       private void start() {
         if (!playing) {
           playing = true;
-          if (main.getVoiceChannels().isEmpty()) {
-            IVoiceChannel channel = BotUtils.getConnectedChannel(main.getGuild(), user);
+          if (bot.getVoiceChannels().isEmpty()) {
+            IVoiceChannel channel = BotUtils.getConnectedChannel(bot.getGuild(), user);
             if (channel != null) {
               channel.join();
+              BotUtils.log(bot, "Connected to \"" + channel.getName() + "\".");
             }
           }
           playlist.goStart();
@@ -144,69 +129,89 @@ public class MusicScheduler extends AudioEventAdapter {
   }
 
   private void play() {
-    main.setStatus(playlist.currentText());
-    playlist.play();
+    if (playlist != null) {
+      bot.setStatus(playlist.currentText());
+      playlist.play();
+    }
   }
 
   public void pause() {
-    audioPlayer.setPaused(!audioPlayer.isPaused());
+    if (playing) {
+      audioPlayer.setPaused(!audioPlayer.isPaused());
+    }
   }
 
   public void changeTrack(boolean next) {
-    switch (loopMode) {
-      case ALL: // Looping all
-        if (next) {
-          playlist.next();
-        } else {
-          playlist.prev();
-        }
-        play();
-        break;
-
-      case ONE: // Looping one
-        play();
-        break;
-
-      default:  // Not looping
-        // Last track
-        if (playlist.isLast() && next) {
-          stop();
-        } else if (playlist.isFirst() && !next) {
-          stop();
-        }
-        // Any other track
-        else {
+    if (playlist != null) {
+      switch (loopMode) {
+        case ALL: // Looping all
           if (next) {
             playlist.next();
           } else {
             playlist.prev();
           }
           play();
-        }
-        break;
+          break;
+
+        case ONE: // Looping one
+          play();
+          break;
+
+        default:  // Not looping
+          // Last track
+          if (playlist.isLast() && next) {
+            stop();
+          } else if (playlist.isFirst() && !next) {
+            stop();
+          }
+          // Any other track
+          else {
+            if (next) {
+              playlist.next();
+            } else {
+              playlist.prev();
+            }
+            play();
+          }
+          break;
+      }
     }
   }
 
   public void shuffle() {
-    playlist.shuffle();
-    changeTrack(true);
+    if (playlist != null) {
+      playlist.shuffle();
+      playlist.goStart();
+      play();
+    }
   }
 
   public void remove() {
-    playlist.removeCurrent();
-    play();
+    if (playlist != null) {
+      if (playlist.size() > 1) {
+        playlist.removeCurrent();
+        play();
+      } else {
+        stop();
+      }
+    }
   }
 
   public boolean seek(String search) {
     return (playlist != null) && playlist.seek(search);
   }
 
+  public void setVolume(int percent) {
+    audioPlayer.setVolume(percent);
+  }
+
   public void stop() {
-    playlist = null;
-    main.setStatus(null);
-    audioPlayer.stopTrack();
-    main.leaveChannels();
     playing = false;
+    playlist = null;
+    BotUtils.log(bot, "Cleared queue.");
+    bot.clearStatus();
+    stopTrack();
+    bot.leaveChannels();
   }
 
   // Event listeners
@@ -214,7 +219,7 @@ public class MusicScheduler extends AudioEventAdapter {
   public void onPlayerPause(AudioPlayer player) {
     paused = true;
     pause_time = audioPlayer.getPlayingTrack().getPosition();
-    audioPlayer.stopTrack();
+    stopTrack();
   }
 
   @Override
@@ -228,7 +233,7 @@ public class MusicScheduler extends AudioEventAdapter {
 
   @Override
   public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-    if (endReason != AudioTrackEndReason.REPLACED && !paused) {
+    if (playing && !paused && endReason != AudioTrackEndReason.REPLACED) {
       changeTrack(true);
     }
   }
@@ -238,7 +243,7 @@ public class MusicScheduler extends AudioEventAdapter {
     audioPlayer.stopTrack();
   }
 
-  private DankTrack newTrack(AudioTrack track, String url) {
-    return new DankTrack(this, track, url);
+  private Track newTrack(AudioTrack track, String url) {
+    return new Track(this, track, url);
   }
 }

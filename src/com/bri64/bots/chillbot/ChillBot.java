@@ -2,7 +2,6 @@ package com.bri64.bots.chillbot;
 
 import com.bri64.bots.Bot;
 import com.bri64.bots.chillbot.audio.MusicScheduler;
-import com.bri64.bots.chillbot.db.DBManager;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.handle.obj.IGuild;
 
@@ -10,7 +9,7 @@ import sx.blah.discord.handle.obj.IGuild;
 public class ChillBot extends Bot {
 
   private IGuild guild;
-  private MusicListener musicListener;
+  private CommandListener commandListener;
   private MusicScheduler musicScheduler;
   private DBManager dbm;
 
@@ -28,14 +27,17 @@ public class ChillBot extends Bot {
     // Setup guild
     this.guild = client.getGuilds().get(0);
 
+    // Fix dangling instances
+    fixDangles();
+
     // Connect to DB
     connectDB();
 
-    // Register listeners
-    registerListeners();
-
     // Initialize audio
     initTrackScheduler();
+
+    // Register listeners
+    registerListeners();
 
     // Shutdown DB on exit
     Runtime.getRuntime().addShutdownHook(new Thread(() -> dbm.stop()));
@@ -45,17 +47,10 @@ public class ChillBot extends Bot {
     return guild;
   }
 
-  public MusicScheduler getMusicScheduler() {
-    return musicScheduler;
-  }
-
-  public DBManager getDBM() {
-    return dbm;
-  }
-
   @Override
   protected void registerListeners() {
-    client.getDispatcher().registerListener(musicListener = new MusicListener(this));
+    client.getDispatcher()
+        .registerListener(commandListener = new CommandListener(this, musicScheduler, dbm));
   }
 
   private void initTrackScheduler() {

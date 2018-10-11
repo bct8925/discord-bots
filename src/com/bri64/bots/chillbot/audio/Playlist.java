@@ -7,10 +7,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
-public class DankPlaylist implements Iterable<DankTrack> {
+public class Playlist implements Iterable<Track> {
 
-  private List<DankTrack> tracks;
-  private DankTrack current;
+  private List<Track> tracks;
+  private Track current;
   private AudioPlayer player;
 
   public int size() {
@@ -18,13 +18,13 @@ public class DankPlaylist implements Iterable<DankTrack> {
   }
 
   // Initialization
-  public DankPlaylist(AudioPlayer player) {
+  public Playlist(AudioPlayer player) {
     this.tracks = new LinkedList<>();
     this.current = null;
     this.player = player;
   }
 
-  public void addTrack(DankTrack track) {
+  public void addTrack(Track track) {
     tracks.add(track);
   }
 
@@ -42,9 +42,9 @@ public class DankPlaylist implements Iterable<DankTrack> {
 
   public boolean seek(String search) {
     if (current != null) {
-      DankTrack start = current;
+      Track start = current;
       try {
-        DankTrack cur = tracks.get(tracks.indexOf(start) + 1);//getTrack();
+        Track cur = tracks.get(tracks.indexOf(start) + 1);//getTrack();
         while (!cur.titleMatches(search)) {
           cur = tracks.get(tracks.indexOf(cur) + 1);
         }
@@ -54,7 +54,7 @@ public class DankPlaylist implements Iterable<DankTrack> {
         return true;
 
       } catch (IndexOutOfBoundsException ex) {
-        DankTrack cur = tracks.get(0);
+        Track cur = tracks.get(0);
         if (cur.equals(start) && !cur.titleMatches(search)) {
           return false;
         }
@@ -102,14 +102,14 @@ public class DankPlaylist implements Iterable<DankTrack> {
 
   public void removeCurrent() {
     if (size() > 1) {
-      DankTrack old = current;
+      Track old = current;
       next();
       tracks.remove(old);
     }
   }
 
   // Getters
-  public DankTrack getCurrent() {
+  public Track getCurrent() {
     return current;
   }
 
@@ -149,16 +149,16 @@ public class DankPlaylist implements Iterable<DankTrack> {
   }
 
   // Helpers
-  private DankTrack getFirst() {
-    return (DankTrack) ((LinkedList) tracks).getFirst();
+  private Track getFirst() {
+    return (Track) ((LinkedList) tracks).getFirst();
   }
 
-  private DankTrack getLast() {
-    return (DankTrack) ((LinkedList) tracks).getLast();
+  private Track getLast() {
+    return (Track) ((LinkedList) tracks).getLast();
   }
 
   @Override
-  public Iterator<DankTrack> iterator() {
+  public Iterator<Track> iterator() {
     return tracks.iterator();
   }
 }
