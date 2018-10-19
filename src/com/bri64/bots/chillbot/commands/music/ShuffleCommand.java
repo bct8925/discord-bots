@@ -22,6 +22,7 @@ public class ShuffleCommand extends MusicCommand {
     if (args.length > 2) {
       BotUtils.sendMessage(user.mention() + " " + "Invalid arguments! Usage: shuffle [on|off]",
           user.getOrCreatePMChannel());
+      return;
     }
 
     // Valid user check

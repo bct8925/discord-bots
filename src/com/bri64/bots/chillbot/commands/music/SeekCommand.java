@@ -19,9 +19,10 @@ public class SeekCommand extends MusicCommand {
     String[] args = message.split(" ");
 
     // Argument check
-    if (args.length != 2) {
+    if (args.length < 2) {
       BotUtils.sendMessage(user.mention() + " " + "Invalid arguments! Usage: seek query",
           user.getOrCreatePMChannel());
+      return;
     }
 
     // Valid user check

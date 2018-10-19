@@ -22,6 +22,7 @@ public class VolumeCommand extends MusicCommand {
     if (args.length != 2) {
       BotUtils.sendMessage(user.mention() + " " + "Invalid arguments! Usage: volume percent",
           user.getOrCreatePMChannel());
+      return;
     }
 
     // Valid user check

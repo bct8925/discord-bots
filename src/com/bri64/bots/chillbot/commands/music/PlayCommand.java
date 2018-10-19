@@ -22,6 +22,7 @@ public class PlayCommand extends MusicCommand {
     if (args.length != 2) {
       BotUtils.sendMessage(user.mention() + " " + "Invalid arguments! Usage: play url",
           user.getOrCreatePMChannel());
+      return;
     }
 
     // Valid user check

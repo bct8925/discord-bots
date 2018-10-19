@@ -23,6 +23,7 @@ public class LoopCommand extends MusicCommand {
     if (args.length != 2) {
       BotUtils.sendMessage(user.mention() + " " + "Invalid arguments! Usage: loop none|one|all",
           user.getOrCreatePMChannel());
+      return;
     }
 
     // Valid user check
