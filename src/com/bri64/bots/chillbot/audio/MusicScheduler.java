@@ -209,7 +209,7 @@ public class MusicScheduler extends AudioEventAdapter {
     playing = false;
     playlist = null;
     BotUtils.log(bot, "Cleared queue.");
-    bot.clearStatus();
+    bot.setStatus(null);
     stopTrack();
     bot.leaveChannels();
   }

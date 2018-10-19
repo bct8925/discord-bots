@@ -2,51 +2,47 @@ package com.bri64.bots;
 
 import java.util.List;
 import org.apache.commons.text.StringEscapeUtils;
+import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.api.events.EventSubscriber;
+import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.obj.ActivityType;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.StatusType;
 import sx.blah.discord.util.RequestBuffer;
 
 @SuppressWarnings("WeakerAccess")
-public abstract class Bot {
+public abstract class DiscordBot {
 
-  protected IDiscordClient client;
+  protected List<IGuild> guilds;
   protected String symbol;
-  private BotListener botListener;
+  protected boolean ready;
 
   public String getSymbol() {
     return StringEscapeUtils.escapeJava(symbol);
   }
 
+  protected IDiscordClient client;
+
+  protected DiscordBot(final String symbol, final String token) {
+    this.symbol = symbol;
+    client = new ClientBuilder().withToken(token).build();
+
+    // Register base listener
+    client.getDispatcher().registerListener(this);
+
+    // Login and wait for connection
+    this.ready = false;
+    login();
+
+    // Set guilds
+    this.guilds = client.getGuilds();
+  }
+
   public boolean isReady() {
-    return botListener.isReady();
-  }
-
-  protected void registerBotListener() {
-    client.getDispatcher().registerListener(botListener = new BotListener());
-  }
-
-  protected abstract void registerListeners();
-
-  protected void login() {
-    client.login();
-    BotUtils.log(this, "Initializing...");
-    while (!botListener.isReady()) {
-      BotUtils.waiting();
-    }
-    BotUtils.log(this, "Ready!");
-  }
-
-  public void clearStatus() {
-    RequestBuffer
-        .request(() -> client.changePresence(StatusType.ONLINE));
-  }
-
-  public void setStatus(String status) {
-    RequestBuffer
-        .request(() -> client.changePresence(StatusType.ONLINE, ActivityType.LISTENING, status));
+    return ready;
   }
 
   public IUser getUser() {
@@ -55,6 +51,24 @@ public abstract class Bot {
 
   public List<IVoiceChannel> getVoiceChannels() {
     return client.getConnectedVoiceChannels();
+  }
+
+  private void login() {
+    client.login();
+    BotUtils.log(this, "Initializing...");
+    while (!ready) {
+      BotUtils.waiting();
+    }
+    BotUtils.log(this, "Ready!");
+  }
+
+  public void setStatus(String status) {
+    if (status != null) {
+      RequestBuffer
+          .request(() -> client.changePresence(StatusType.ONLINE, ActivityType.LISTENING, status));
+    } else {
+      RequestBuffer.request(() -> client.changePresence(StatusType.ONLINE));
+    }
   }
 
   public void leaveChannels() {
@@ -79,5 +93,10 @@ public abstract class Bot {
         }
       });
     }
+  }
+
+  @EventSubscriber
+  public void onReady(ReadyEvent event) {
+    ready = true;
   }
 }

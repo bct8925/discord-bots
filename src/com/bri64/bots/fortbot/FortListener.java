@@ -1,7 +1,6 @@
 package com.bri64.bots.fortbot;
 
 import com.bri64.bots.BotUtils;
-import com.bri64.bots.MessageListener;
 import com.bri64.bots.fortbot.json.FortniteAccount;
 import com.google.gson.Gson;
 import java.util.HashMap;
@@ -20,7 +19,7 @@ import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
 
 @SuppressWarnings({"WeakerAccess", "FieldCanBeLocal"})
-public class FortListener extends MessageListener {
+public class FortListener {
 
   private static String API_KEY = "5f1ca39c-d3f0-4f27-9bb0-1d5832ff3f39";
   private static String IMG_URL = "https://cdn.discordapp.com/attachments/434758225640816641/435235573398241281/logo.png";
@@ -28,23 +27,21 @@ public class FortListener extends MessageListener {
   private static String CHANNEL = "trophy_room";
   private static int ONE_MINUTE = 60000;
   private static int UPDATE_DELAY = ONE_MINUTE * 2;
+  private static String help = "```" +
+      "FortBot:\n" +
+      "\t@FortBot = Help Command\n" +
+      "\t!stats [platform/username] = Check player stats\n" +
+      "\t!track [platform/username] = Start tracking player stats\n" +
+      "\t!untrack [platform/username] = Stop tracking player stats\n" +
+      "\t!winner = Update stats after a win\n" +
+      "\t!update = Update stats manually" +
+      "```";
 
   private FortBot main;
-
   private Map<String, Player> trackedPlayers;
 
   public FortListener(FortBot main) {
     this.main = main;
-    this.help = "```" +
-        "FortBot:\n" +
-        "\t@FortBot = Help Command\n" +
-        "\t!stats [platform/username] = Check player stats\n" +
-        "\t!track [platform/username] = Start tracking player stats\n" +
-        "\t!untrack [platform/username] = Stop tracking player stats\n" +
-        "\t!winner = Update stats after a win\n" +
-        "\t!update = Update stats manually" +
-        "```";
-
     this.trackedPlayers = new HashMap<>();
 
     new Thread(() -> {
@@ -75,7 +72,6 @@ public class FortListener extends MessageListener {
   }
 
   @EventSubscriber
-  @Override
   public void onMention(MentionEvent event) {
     if (!event.getMessage().getContent().contains("@everyone") && !event.getMessage().getContent()
         .contains("@here")) {
@@ -86,7 +82,6 @@ public class FortListener extends MessageListener {
   }
 
   @EventSubscriber
-  @Override
   public void onMessage(MessageReceivedEvent event) {
     if (main.isReady()) {
 

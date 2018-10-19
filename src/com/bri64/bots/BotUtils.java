@@ -14,10 +14,10 @@ import sx.blah.discord.util.RequestBuffer;
 @SuppressWarnings("WeakerAccess")
 public class BotUtils {
 
-  public static void log(Bot main, String message) {
+  public static void log(DiscordBot main, String message) {
     System.out.println(
         new SimpleDateFormat("HH:mm:ss.SSS").format(new Date()) + ": [" + main.getClass()
-            .getSimpleName() + "] - " + message);
+            .getSimpleName() + "] " + message);
   }
 
   public static void waiting() {
