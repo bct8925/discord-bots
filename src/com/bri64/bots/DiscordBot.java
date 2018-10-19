@@ -41,6 +41,8 @@ public abstract class DiscordBot {
     this.guilds = client.getGuilds();
   }
 
+  public abstract IGuild getGuild();
+
   public boolean isReady() {
     return ready;
   }

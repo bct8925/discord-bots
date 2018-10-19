@@ -1,33 +1,27 @@
 package com.bri64.bots.chillbot;
 
-import com.bri64.bots.chillbot.audio.MusicScheduler;
-import com.bri64.bots.chillbot.commands.KickCommand;
-import com.bri64.bots.chillbot.commands.music.KillCommand;
+import com.bri64.bots.DiscordBot;
+import com.bri64.bots.audio.MusicScheduler;
+import com.bri64.bots.commands.music.KillCommand;
 import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelMoveEvent;
+import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelJoinEvent;
 
-@SuppressWarnings({"WeakerAccess", "FieldCanBeLocal"})
+@SuppressWarnings("WeakerAccess")
 public class ChannelListener {
 
-  private static String kickChannel = "~~~ /kick ~~~";
-  private ChillBot bot;
+  private DiscordBot bot;
   private MusicScheduler scheduler;
 
-  public ChannelListener(final ChillBot bot, final MusicScheduler scheduler) {
+  public ChannelListener(final DiscordBot bot, final MusicScheduler scheduler) {
     this.bot = bot;
     this.scheduler = scheduler;
   }
 
   @EventSubscriber
-  public void onUserVoiceChannelChange(UserVoiceChannelMoveEvent event) {
-    if (bot.isReady()) {
-      if (event.getUser().getName().equals(bot.getUser().getName())
-          && event.getNewChannel() == event.getGuild().getAFKChannel()) {
-        new KillCommand(null, scheduler).execute();
-      } else if (event.getNewChannel().getName().equalsIgnoreCase(kickChannel)
-          && !event.getUser().getName().equals(bot.getUser().getName())) {
-        new KickCommand(event, bot).execute();
-      }
+  public void onUserVoiceChannelJoin(UserVoiceChannelJoinEvent event) {
+    if (event.getUser().getName().equals(bot.getUser().getName())
+        && event.getVoiceChannel().equals(event.getGuild().getAFKChannel())) {
+      new KillCommand(null, scheduler).execute();
     }
   }
 }

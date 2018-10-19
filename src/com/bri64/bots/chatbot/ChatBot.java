@@ -1,19 +1,20 @@
-package com.bri64.bots.chillbot;
+package com.bri64.bots.chatbot;
 
 import com.bri64.bots.DBManager;
 import com.bri64.bots.DiscordBot;
+import com.bri64.bots.audio.LoopMode;
 import com.bri64.bots.audio.MusicScheduler;
 import sx.blah.discord.handle.obj.IGuild;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
-public class ChillBot extends DiscordBot {
+public class ChatBot extends DiscordBot {
 
   private DBManager dbm;
   private MusicScheduler musicScheduler;
-  private ChillListener chillListener;
-  private ChannelListener channelListener;
+  private ChatListener chatListener;
+  private JoinLeaveListener joinLeaveListener;
 
-  public ChillBot(String symbol, String token) {
+  public ChatBot(String symbol, String token) {
     // Setup bot
     super(symbol, token);
 
@@ -26,18 +27,18 @@ public class ChillBot extends DiscordBot {
 
     // Initialize audio
     this.musicScheduler = new MusicScheduler(this);
+    musicScheduler.setLoop(LoopMode.NONE);
 
     // Register listeners
     client.getDispatcher()
-        .registerListener(chillListener = new ChillListener(this, musicScheduler, dbm));
+        .registerListener(chatListener = new ChatListener(this, musicScheduler, dbm));
     client.getDispatcher()
-        .registerListener(channelListener = new ChannelListener(this, musicScheduler));
+        .registerListener(joinLeaveListener = new JoinLeaveListener(this, musicScheduler, dbm));
 
     // Shutdown DB on exit
     Runtime.getRuntime().addShutdownHook(new Thread(() -> dbm.stop()));
   }
 
-  @Override
   public IGuild getGuild() {
     return guilds.get(0);
   }

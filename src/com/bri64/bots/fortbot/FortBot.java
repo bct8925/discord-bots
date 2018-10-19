@@ -19,6 +19,7 @@ public class FortBot extends DiscordBot {
     //    () -> client.changePresence(StatusType.ONLINE, ActivityType.LISTENING, "@me for help!"));
   }
 
+  @Override
   public IGuild getGuild() {
     return guilds.get(0);
   }
