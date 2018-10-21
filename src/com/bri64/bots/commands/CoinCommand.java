@@ -2,21 +2,17 @@ package com.bri64.bots.commands;
 
 import com.bri64.bots.BotUtils;
 import java.util.Random;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEvent;
-import sx.blah.discord.handle.obj.IUser;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class CoinCommand extends MessageCommand {
+public class CoinCommand extends DiscordCommand {
 
-  public CoinCommand(final MessageEvent event) {
+  public CoinCommand(final CommandEvent event) {
     super(event);
   }
 
   @Override
   public void execute() {
-    IUser user = event.getMessage().getAuthor();
-    BotUtils.sendMessage(user.mention() + " "
-        + ((new Random().nextBoolean()) ? "Heads!" : "Tails!"), user.getOrCreatePMChannel());
-
+    BotUtils.sendMessage(getUser().mention() + " "
+        + ((new Random().nextBoolean()) ? "Heads!" : "Tails!"), getUser().getOrCreatePMChannel());
   }
 }

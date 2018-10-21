@@ -1,4 +1,4 @@
-package com.bri64.bots.audio;
+package com.bri64.bots.audio.send;
 
 import com.bri64.bots.BotUtils;
 import com.bri64.bots.DiscordBot;
@@ -28,6 +28,18 @@ public class MusicScheduler extends AudioEventAdapter {
   private boolean paused;
   private long pause_time;
 
+  public void setLoop(LoopMode loop) {
+    this.loopMode = loop;
+  }
+
+  public void setShuffle(boolean shuffle) {
+    this.shuffle = shuffle;
+  }
+
+  public void setVolume(int percent) {
+    audioPlayer.setVolume(percent);
+  }
+
   // Initialization
   public MusicScheduler(DiscordBot bot) {
     this.bot = bot;
@@ -41,22 +53,6 @@ public class MusicScheduler extends AudioEventAdapter {
     this.pause_time = 0;
 
     initAudio();
-  }
-
-  public String getTrackInfo() {
-    return playlist.currentInfo();
-  }
-
-  public String getPlaylistInfo() {
-    return playlist.playlistInfo();
-  }
-
-  public void setLoop(LoopMode loop) {
-    this.loopMode = loop;
-  }
-
-  public void setShuffle(boolean shuffle) {
-    this.shuffle = shuffle;
   }
 
   private void initAudio() {
@@ -114,8 +110,7 @@ public class MusicScheduler extends AudioEventAdapter {
           if (bot.getVoiceChannels().isEmpty()) {
             IVoiceChannel channel = BotUtils.getConnectedChannel(bot.getGuild(), user);
             if (channel != null) {
-              channel.join();
-              BotUtils.log(bot, "Connected to \"" + channel.getName() + "\".");
+              bot.joinChannel(channel);
             }
           }
           playlist.goStart();
@@ -201,10 +196,6 @@ public class MusicScheduler extends AudioEventAdapter {
     return (playlist != null) && playlist.seek(search);
   }
 
-  public void setVolume(int percent) {
-    audioPlayer.setVolume(percent);
-  }
-
   public void stop() {
     playing = false;
     playlist = null;
@@ -212,6 +203,39 @@ public class MusicScheduler extends AudioEventAdapter {
     bot.setStatus(null);
     stopTrack();
     bot.leaveChannels();
+  }
+
+  public String getTrackInfo() {
+    return playlist.currentInfo();
+  }
+
+  public String getPlaylistInfo() {
+    return playlist.playlistInfo();
+  }
+
+  public void sendSilence() {
+    if (!playing) {
+      playerManager.loadItem("http://brianstrains.com/silence.wav",
+          new AudioLoadResultHandler() {
+            @Override
+            public void trackLoaded(AudioTrack track) {
+              audioPlayer.playTrack(track);
+            }
+
+            @Override
+            public void loadFailed(FriendlyException exception) {
+              System.out.println(exception.getMessage());
+            }
+
+            @Override
+            public void playlistLoaded(AudioPlaylist playlist) {
+            }
+
+            @Override
+            public void noMatches() {
+            }
+          });
+    }
   }
 
   // Event listeners

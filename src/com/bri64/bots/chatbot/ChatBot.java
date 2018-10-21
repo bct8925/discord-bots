@@ -2,8 +2,8 @@ package com.bri64.bots.chatbot;
 
 import com.bri64.bots.DBManager;
 import com.bri64.bots.DiscordBot;
-import com.bri64.bots.audio.LoopMode;
-import com.bri64.bots.audio.MusicScheduler;
+import com.bri64.bots.audio.send.LoopMode;
+import com.bri64.bots.audio.send.MusicScheduler;
 import sx.blah.discord.handle.obj.IGuild;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
@@ -28,6 +28,7 @@ public class ChatBot extends DiscordBot {
     // Initialize audio
     this.musicScheduler = new MusicScheduler(this);
     musicScheduler.setLoop(LoopMode.NONE);
+    musicScheduler.setVolume(5);
 
     // Register listeners
     client.getDispatcher()

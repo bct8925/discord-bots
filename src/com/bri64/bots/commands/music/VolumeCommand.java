@@ -1,50 +1,52 @@
 package com.bri64.bots.commands.music;
 
 import com.bri64.bots.BotUtils;
-import com.bri64.bots.audio.MusicScheduler;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEvent;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IUser;
+import com.bri64.bots.audio.send.MusicScheduler;
+import com.bri64.bots.commands.CommandEvent;
+import com.bri64.bots.commands.error.InvalidGuildError;
 
 public class VolumeCommand extends MusicCommand {
 
-  public VolumeCommand(final MessageEvent event, final MusicScheduler scheduler) {
+  public VolumeCommand(final CommandEvent event, final MusicScheduler scheduler) {
     super(event, scheduler);
   }
 
   @Override
   public void execute() {
-    IUser user = event.getMessage().getAuthor();
-    String message = event.getMessage().getContent();
-    String[] args = message.split(" ");
-
     // Argument check
+    String[] args = getMessage().split(" ");
     if (args.length != 2) {
-      BotUtils.sendMessage(user.mention() + " " + "Invalid arguments! Usage: volume percent",
-          user.getOrCreatePMChannel());
+      invalidArgs();
       return;
     }
 
-    // Valid user check
-    IGuild guild = !event.getChannel().isPrivate() ? event.getChannel().getGuild() : null;
-    if (BotUtils.getConnectedChannel(guild, user) == null) {
-      BotUtils.sendMessage(user.mention() + " " +
-              "Error, can only be run from guild while user is in a voice channel.",
-          user.getOrCreatePMChannel());
+    // Valid guild check
+    if (getGuild() == null) {
+      new InvalidGuildError(event).execute();
       return;
     }
 
+    valid();
+  }
+
+  @Override
+  public void valid() {
     try {
-      int percent = Integer.parseInt(args[1]);
+      int percent = Integer.parseInt(getMessage().split(" ")[1]);
       if (percent > 0 && percent <= 50) {
         scheduler.setVolume(percent);
       } else {
-        BotUtils.sendMessage(user.mention() + " " + "Percent must be a number 1-50!",
-            user.getOrCreatePMChannel());
+        throw new NumberFormatException();
       }
     } catch (NumberFormatException ex) {
-      BotUtils.sendMessage(user.mention() + " " + "Percent must be a number 1-50!",
-          user.getOrCreatePMChannel());
+      BotUtils.sendMessage(getUser().mention() + " " + "Percent must be a number 1-50!",
+          getUser().getOrCreatePMChannel());
     }
+  }
+
+  @Override
+  public void invalidArgs() {
+    BotUtils.sendMessage(getUser().mention() + " " + "Invalid arguments! Usage: volume percent",
+        getUser().getOrCreatePMChannel());
   }
 }

@@ -1,4 +1,4 @@
-package com.bri64.bots.audio;
+package com.bri64.bots.audio.send;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;

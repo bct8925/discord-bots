@@ -2,16 +2,16 @@ package com.bri64.bots.commands;
 
 import com.bri64.bots.DiscordBot;
 import java.util.List;
-import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelJoinEvent;
+import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelMoveEvent;
 import sx.blah.discord.handle.obj.ICategory;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 
 public class KickCommand implements Command {
 
-  private UserVoiceChannelJoinEvent event;
+  private UserVoiceChannelMoveEvent event;
   private DiscordBot bot;
 
-  public KickCommand(final UserVoiceChannelJoinEvent event, final DiscordBot bot) {
+  public KickCommand(final UserVoiceChannelMoveEvent event, final DiscordBot bot) {
     this.event = event;
     this.bot = bot;
   }
@@ -25,8 +25,16 @@ public class KickCommand implements Command {
       IVoiceChannel newChannel = bot.getGuild().createVoiceChannel("~~~ /kick ~~~");
       newChannel.changeCategory(catas.get(0));
       //IRole everyone = bot.getGuild().getEveryoneRole();
-      //newChannel.overrideRolePermissions(everyone, null, EnumSet.of(Permissions.READ_MESSAGES, Permissions.VOICE_CONNECT));
+      //newChannel.overrideRolePermissions(everyone, null, EnumSet.of(Permissions.READ_MESSAGES, Permissions.VOICE_CONNECT));();
     }
 
+  }
+
+  @Override
+  public void valid() {
+  }
+
+  @Override
+  public void invalidArgs() {
   }
 }

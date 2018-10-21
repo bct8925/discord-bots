@@ -1,40 +1,43 @@
 package com.bri64.bots.commands.music;
 
 import com.bri64.bots.BotUtils;
-import com.bri64.bots.audio.MusicScheduler;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEvent;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IUser;
+import com.bri64.bots.audio.send.MusicScheduler;
+import com.bri64.bots.commands.CommandEvent;
+import com.bri64.bots.commands.error.InvalidGuildError;
 
 public class QueueCommand extends MusicCommand {
 
-  public QueueCommand(final MessageEvent event, final MusicScheduler scheduler) {
+  public QueueCommand(final CommandEvent event, final MusicScheduler scheduler) {
     super(event, scheduler);
   }
 
   @Override
   public void execute() {
-    IUser user = event.getMessage().getAuthor();
-    String message = event.getMessage().getContent();
-    String[] args = message.split(" ");
-
     // Argument check
+    String[] args = getMessage().split(" ");
     if (args.length != 2) {
-      BotUtils.sendMessage(user.mention() + " " + "Invalid arguments! Usage: queue url",
-          user.getOrCreatePMChannel());
+      invalidArgs();
       return;
     }
 
-    // Valid user check
-    IGuild guild = !event.getChannel().isPrivate() ? event.getChannel().getGuild() : null;
-    if (BotUtils.getConnectedChannel(guild, user) == null) {
-      BotUtils.sendMessage(user.mention() + " " +
-              "Error, can only be run from guild while user is in a voice channel.",
-          user.getOrCreatePMChannel());
+    // Valid guild check
+    if (getGuild() == null) {
+      new InvalidGuildError(event).execute();
       return;
     }
 
-    String url = message.split(" ")[1];
-    scheduler.loadTracks(user, url, false);
+    valid();
+  }
+
+  @Override
+  public void valid() {
+    String URL = getMessage().split(" ")[1];
+    scheduler.loadTracks(getUser(), URL, false);
+  }
+
+  @Override
+  public void invalidArgs() {
+    BotUtils.sendMessage(getUser().mention() + " " + "Invalid arguments! Usage: queue url",
+        getUser().getOrCreatePMChannel());
   }
 }

@@ -1,25 +1,24 @@
 package com.bri64.bots.commands.music;
 
 import com.bri64.bots.BotUtils;
+import com.bri64.bots.DiscordBot;
 import com.bri64.bots.audio.send.MusicScheduler;
 import com.bri64.bots.commands.CommandEvent;
 import com.bri64.bots.commands.error.InvalidGuildError;
+import sx.blah.discord.handle.obj.IVoiceChannel;
 
-public class PlayCommand extends MusicCommand {
+public class JoinCommand extends MusicCommand {
 
-  public PlayCommand(final CommandEvent event, final MusicScheduler scheduler) {
+  private DiscordBot bot;
+
+  public JoinCommand(final CommandEvent event, final DiscordBot bot,
+      final MusicScheduler scheduler) {
     super(event, scheduler);
+    this.bot = bot;
   }
 
   @Override
   public void execute() {
-    // Argument check
-    String[] args = getMessage().split(" ");
-    if (args.length != 2) {
-      invalidArgs();
-      return;
-    }
-
     // Valid guild check
     if (getGuild() == null) {
       new InvalidGuildError(event).execute();
@@ -31,8 +30,14 @@ public class PlayCommand extends MusicCommand {
 
   @Override
   public void valid() {
-    String URL = getMessage().split(" ")[1];
-    scheduler.loadTracks(getUser(), URL, true);
+    IVoiceChannel channel = BotUtils.getConnectedChannel(getGuild(), getUser());
+    if (channel != null) {
+      scheduler.sendSilence();
+      bot.joinChannel(channel);
+    } else {
+      BotUtils.sendMessage(getUser().mention() + " " + "You must be in a voice channel!",
+          getUser().getOrCreatePMChannel());
+    }
   }
 
   @Override

@@ -1,26 +1,26 @@
 package com.bri64.bots.commands;
 
 import com.bri64.bots.BotUtils;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEvent;
-import sx.blah.discord.handle.obj.IUser;
 
 @SuppressWarnings("FieldCanBeLocal")
-public class HelpCommand extends MessageCommand {
+public class HelpCommand extends DiscordCommand {
 
   private String help;
 
-  public HelpCommand(final MessageEvent event, final String help) {
+  public HelpCommand(final CommandEvent event, final String help) {
     super(event);
     this.help = help;
   }
 
   @Override
   public void execute() {
-    IUser user = event.getMessage().getAuthor();
-    String message = event.getMessage().getContent();
-
-    if (!message.contains("@everyone") && !message.contains("@here")) {
-      BotUtils.sendMessage(user.mention() + " " + help, user.getOrCreatePMChannel());
+    if (!getMessage().contains("@everyone") && !getMessage().contains("@here")) {
+      valid();
     }
+  }
+
+  @Override
+  public void valid() {
+    BotUtils.sendMessage(getUser().mention() + " " + help, getUser().getOrCreatePMChannel());
   }
 }

@@ -2,7 +2,8 @@ package com.bri64.bots.chillbot;
 
 import com.bri64.bots.DBManager;
 import com.bri64.bots.DiscordBot;
-import com.bri64.bots.audio.MusicScheduler;
+import com.bri64.bots.audio.receive.ActivateListener;
+import com.bri64.bots.audio.send.MusicScheduler;
 import sx.blah.discord.handle.obj.IGuild;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
@@ -10,6 +11,7 @@ public class ChillBot extends DiscordBot {
 
   private DBManager dbm;
   private MusicScheduler musicScheduler;
+  private ActivateListener voiceListener;
   private ChillListener chillListener;
   private ChannelListener channelListener;
 
@@ -26,6 +28,9 @@ public class ChillBot extends DiscordBot {
 
     // Initialize audio
     this.musicScheduler = new MusicScheduler(this);
+
+    // Initialize voice
+    //this.voiceListener = new ActivateListener(this);
 
     // Register listeners
     client.getDispatcher()

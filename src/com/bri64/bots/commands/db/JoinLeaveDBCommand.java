@@ -2,58 +2,62 @@ package com.bri64.bots.commands.db;
 
 import com.bri64.bots.BotUtils;
 import com.bri64.bots.DBManager;
-import com.bri64.bots.commands.MessageCommand;
+import com.bri64.bots.commands.CommandEvent;
+import com.bri64.bots.commands.DiscordCommand;
+import com.bri64.bots.commands.error.InvalidGuildError;
 import java.sql.SQLException;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEvent;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IUser;
 
-public class JoinLeaveDBCommand extends MessageCommand {
+public class JoinLeaveDBCommand extends DiscordCommand {
 
   private DBManager database;
   private boolean join;
+  private String type;
 
-  public JoinLeaveDBCommand(final MessageEvent event, final DBManager database, boolean join) {
+  public JoinLeaveDBCommand(final CommandEvent event, final DBManager database, boolean join) {
     super(event);
     this.database = database;
     this.join = join;
+    this.type = (join) ? "join" : "leave";
   }
 
   @Override
   public void execute() {
-    IUser user = event.getMessage().getAuthor();
-    String message = event.getMessage().getContent();
-    String[] args = message.split(" ");
-    String type = (join) ? "join" : "leave";
-
     // Argument check
+    String[] args = getMessage().split(" ");
     if (args.length != 2) {
-      BotUtils.sendMessage(user.mention() + " " + "Invalid arguments! Usage: " + type + " url",
-          user.getOrCreatePMChannel());
+      invalidArgs();
       return;
     }
 
-    // Valid user check
-    IGuild guild = !event.getChannel().isPrivate() ? event.getChannel().getGuild() : null;
-    if (BotUtils.getConnectedChannel(guild, user) == null) {
-      BotUtils.sendMessage(user.mention() + " " +
-              "Error, can only be run from guild while user is in a voice channel.",
-          user.getOrCreatePMChannel());
+    // Valid guild check
+    if (getGuild() == null) {
+      new InvalidGuildError(event).execute();
       return;
     }
 
+    valid();
+  }
+
+  @Override
+  public void valid() {
     try {
-      String userName = user.getName() + "#" + user.getDiscriminator();
-      String URL = args[1];
+      String userName = getUser().getName() + "#" + getUser().getDiscriminator();
+      String URL = getMessage().split(" ")[1];
       if (join) {
         database.setJoin(userName, URL);
       } else {
         database.setLeave(userName, URL);
       }
-      BotUtils
-          .sendMessage(user.mention() + " " + type + " set to " + URL, user.getOrCreatePMChannel());
+      BotUtils.sendMessage(
+          getUser().mention() + " " + type + " set to " + URL, getUser().getOrCreatePMChannel());
     } catch (SQLException e) {
       database.reconnect();
     }
+  }
+
+  @Override
+  public void invalidArgs() {
+    BotUtils.sendMessage(getUser().mention() + " " + "Invalid arguments! Usage: " + type + " url",
+        getUser().getOrCreatePMChannel());
   }
 }

@@ -1,20 +1,19 @@
 package com.bri64.bots.chatbot;
 
 import com.bri64.bots.DBManager;
-import com.bri64.bots.audio.MusicScheduler;
+import com.bri64.bots.MessageListener;
+import com.bri64.bots.audio.send.MusicScheduler;
 import com.bri64.bots.commands.CoinCommand;
-import com.bri64.bots.commands.HelpCommand;
-import com.bri64.bots.commands.InvalidCommand;
+import com.bri64.bots.commands.CommandEvent;
 import com.bri64.bots.commands.db.JoinLeaveDBCommand;
+import com.bri64.bots.commands.error.InvalidCommandError;
 import com.bri64.bots.commands.music.KillCommand;
 import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MentionEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 @SuppressWarnings("WeakerAccess")
-public class ChatListener {
+public class ChatListener extends MessageListener {
 
-  private static String help = "```" +
+  private static String CHATBOT_HELP = "```" +
       "ChatBot:\n" +
       "\t@ChatBot = Help Command\n" +
       "\t'coin' = Tosses a coin\n" +
@@ -28,21 +27,17 @@ public class ChatListener {
 
   public ChatListener(final ChatBot bot, final MusicScheduler scheduler,
       final DBManager database) {
+    super(CHATBOT_HELP);
     this.bot = bot;
     this.scheduler = scheduler;
     this.database = database;
   }
 
-  @EventSubscriber
-  public void onMention(MentionEvent event) {
-    new HelpCommand(event, help).execute();
-  }
 
+  @Override
   @EventSubscriber
-  public void onMessage(MessageReceivedEvent event) {
-    // Setup variables
-    String message = event.getMessage().getContent();
-    String command = message.split(" ")[0];
+  public void onCommandEvent(CommandEvent event) {
+    String command = event.getMessage().split(" ")[0];
 
     // Coin
     if (command.equalsIgnoreCase(bot.getSymbol() + "coin")) {
@@ -60,13 +55,13 @@ public class ChatListener {
     }
 
     // Kill
-    else if (message.equalsIgnoreCase(bot.getSymbol() + "kill")) {
+    else if (command.equalsIgnoreCase(bot.getSymbol() + "kill")) {
       new KillCommand(event, scheduler).execute();
     }
 
     // Else
-    else if (message.matches("^[" + bot.getSymbol() + "][^" + bot.getSymbol() + "].*")) {
-      new InvalidCommand(event).execute();
+    else if (event.getMessage().matches("^[" + bot.getSymbol() + "][^" + bot.getSymbol() + "].*")) {
+      new InvalidCommandError(event).execute();
     }
   }
 }

@@ -1,10 +1,12 @@
 package com.bri64.bots.chillbot;
 
 import com.bri64.bots.DBManager;
-import com.bri64.bots.audio.MusicScheduler;
-import com.bri64.bots.commands.HelpCommand;
+import com.bri64.bots.MessageListener;
+import com.bri64.bots.audio.send.MusicScheduler;
+import com.bri64.bots.commands.CommandEvent;
 import com.bri64.bots.commands.db.AddDBCommand;
 import com.bri64.bots.commands.db.PlayDBCommand;
+import com.bri64.bots.commands.music.JoinCommand;
 import com.bri64.bots.commands.music.KillCommand;
 import com.bri64.bots.commands.music.LoopCommand;
 import com.bri64.bots.commands.music.NextCommand;
@@ -19,15 +21,14 @@ import com.bri64.bots.commands.music.ShuffleCommand;
 import com.bri64.bots.commands.music.SongInfoCommand;
 import com.bri64.bots.commands.music.VolumeCommand;
 import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MentionEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 @SuppressWarnings("WeakerAccess")
-public class ChillListener {
+public class ChillListener extends MessageListener {
 
-  private static String help = "```" +
+  private static String CHILLBOT_HELP = "```" +
       "ChillBot:\n" +
       "\t@ChillBot = Help Command\n" +
+      "\t'join' = Join the channel you are in\n" +
       "\t'play url' = Play the audio at the specified url now\n" +
       "\t'queue url' = Queue the audio at the specified url\n" +
       "\t'pause' = Pause/unpause the current track\n" +
@@ -49,24 +50,26 @@ public class ChillListener {
 
   public ChillListener(final ChillBot bot, final MusicScheduler scheduler,
       final DBManager database) {
+    super(CHILLBOT_HELP);
     this.bot = bot;
     this.scheduler = scheduler;
     this.database = database;
   }
 
+  @Override
   @EventSubscriber
-  public void onMention(MentionEvent event) {
-    new HelpCommand(event, help).execute();
-  }
-
-  @EventSubscriber
-  public void onMessage(MessageReceivedEvent event) {
+  public void onCommandEvent(CommandEvent event) {
     // Setup variables
-    String message = event.getMessage().getContent();
+    String message = event.getMessage();
     String command = message.split(" ")[0];
 
+    // Join
+    if (command.equalsIgnoreCase(bot.getSymbol() + "join")) {
+      new JoinCommand(event, bot, scheduler).execute();
+    }
+
     // Play
-    if (command.equalsIgnoreCase(bot.getSymbol() + "play")) {
+    else if (command.equalsIgnoreCase(bot.getSymbol() + "play")) {
       new PlayCommand(event, scheduler).execute();
     }
 

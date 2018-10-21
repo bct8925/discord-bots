@@ -1,26 +1,27 @@
 package com.bri64.bots.chillbot;
 
-import com.bri64.bots.DiscordBot;
-import com.bri64.bots.audio.MusicScheduler;
+import com.bri64.bots.audio.send.MusicScheduler;
 import com.bri64.bots.commands.music.KillCommand;
 import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelJoinEvent;
+import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelMoveEvent;
 
 @SuppressWarnings("WeakerAccess")
 public class ChannelListener {
 
-  private DiscordBot bot;
+  private static String kickChannel = "~~~ /kick ~~~";
+  private ChillBot bot;
   private MusicScheduler scheduler;
 
-  public ChannelListener(final DiscordBot bot, final MusicScheduler scheduler) {
+  public ChannelListener(final ChillBot bot, final MusicScheduler scheduler) {
     this.bot = bot;
     this.scheduler = scheduler;
   }
 
   @EventSubscriber
-  public void onUserVoiceChannelJoin(UserVoiceChannelJoinEvent event) {
-    if (event.getUser().getName().equals(bot.getUser().getName())
-        && event.getVoiceChannel().equals(event.getGuild().getAFKChannel())) {
+  public void onUserVoiceChannelMove(UserVoiceChannelMoveEvent event) {
+    if (event.getUser().equals(bot.getUser())
+        && (event.getNewChannel().equals(event.getGuild().getAFKChannel())
+        || event.getNewChannel().getName().equalsIgnoreCase(kickChannel))) {
       new KillCommand(null, scheduler).execute();
     }
   }

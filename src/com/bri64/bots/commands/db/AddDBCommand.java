@@ -2,53 +2,57 @@ package com.bri64.bots.commands.db;
 
 import com.bri64.bots.BotUtils;
 import com.bri64.bots.DBManager;
-import com.bri64.bots.commands.MessageCommand;
+import com.bri64.bots.commands.CommandEvent;
+import com.bri64.bots.commands.DiscordCommand;
+import com.bri64.bots.commands.error.InvalidGuildError;
 import java.sql.SQLException;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEvent;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IUser;
 
-public class AddDBCommand extends MessageCommand {
+public class AddDBCommand extends DiscordCommand {
 
   private DBManager database;
 
-  public AddDBCommand(final MessageEvent event, final DBManager database) {
+  public AddDBCommand(final CommandEvent event, final DBManager database) {
     super(event);
     this.database = database;
   }
 
   @Override
   public void execute() {
-    IUser user = event.getMessage().getAuthor();
-    String message = event.getMessage().getContent();
-    String[] args = message.split(" ");
-
     // Argument check
+    String[] args = getMessage().split(" ");
     if (args.length != 3) {
-      BotUtils.sendMessage(user.mention() + " " + "Invalid arguments! Usage: add command url",
-          user.getOrCreatePMChannel());
+      invalidArgs();
       return;
     }
 
-    // Valid user check
-    IGuild guild = !event.getChannel().isPrivate() ? event.getChannel().getGuild() : null;
-    if (BotUtils.getConnectedChannel(guild, user) == null) {
-      BotUtils.sendMessage(user.mention() + " " +
-              "Error, can only be run from guild while user is in a voice channel.",
-          user.getOrCreatePMChannel());
+    // Valid guild check
+    if (getGuild() == null) {
+      new InvalidGuildError(event).execute();
       return;
     }
 
+    valid();
+  }
+
+  @Override
+  public void valid() {
     try {
-      String username = user.getName() + "#" + user.getDiscriminator();
+      String username = getUser().getName() + "#" + getUser().getDiscriminator();
       if (database.isAdmin(username)) {
-        String newcomm = message.split(" ")[1];
-        String newurl = message.split(" ")[2];
+        String newcomm = getMessage().split(" ")[1];
+        String newurl = getMessage().split(" ")[2];
         database.addCommand(newcomm, newurl);
-        BotUtils.sendMessage("Added \"" + newcomm + "\"!", user.getOrCreatePMChannel());
+        BotUtils.sendMessage(getUser().mention() + " \"" + newcomm + "\" added successfully!",
+            getUser().getOrCreatePMChannel());
       }
     } catch (SQLException e) {
       database.reconnect();
     }
+  }
+
+  @Override
+  public void invalidArgs() {
+    BotUtils.sendMessage(getUser().mention() + " " + "Invalid arguments! Usage: add command url",
+        getUser().getOrCreatePMChannel());
   }
 }

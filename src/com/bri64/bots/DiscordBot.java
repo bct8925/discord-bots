@@ -4,6 +4,7 @@ import java.util.List;
 import org.apache.commons.text.StringEscapeUtils;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.api.events.Event;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.obj.ActivityType;
@@ -16,6 +17,7 @@ import sx.blah.discord.util.RequestBuffer;
 @SuppressWarnings("WeakerAccess")
 public abstract class DiscordBot {
 
+  protected RequestBuffer buffer;
   protected List<IGuild> guilds;
   protected String symbol;
   protected boolean ready;
@@ -62,6 +64,15 @@ public abstract class DiscordBot {
       BotUtils.waiting();
     }
     BotUtils.log(this, "Ready!");
+  }
+
+  public void joinChannel(IVoiceChannel channel) {
+    channel.join();
+    BotUtils.log(this, "Connected to \"" + channel.getName() + "\".");
+  }
+
+  public void dispatch(Event e) {
+    client.getDispatcher().dispatch(e);
   }
 
   public void setStatus(String status) {
