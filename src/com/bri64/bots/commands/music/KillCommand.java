@@ -23,6 +23,6 @@ public class KillCommand extends MusicCommand {
 
   @Override
   public void valid() {
-    scheduler.stop();
+    scheduler.kill();
   }
 }

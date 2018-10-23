@@ -23,7 +23,7 @@ public abstract class MessageListener {
     IChannel channel = event.getChannel();
     IUser user = event.getMessage().getAuthor();
     String message = event.getMessage().getContent();
-    new HelpCommand(new CommandEvent(guild, channel, user, message), help).execute();
+    new HelpCommand(new CommandEvent(guild, null, channel, user, message), help).execute();
   }
 
   @EventSubscriber
@@ -32,7 +32,7 @@ public abstract class MessageListener {
     IChannel channel = event.getChannel();
     IUser user = event.getMessage().getAuthor();
     String message = event.getMessage().getContent();
-    onCommandEvent(new CommandEvent(guild, channel, user, message));
+    onCommandEvent(new CommandEvent(guild, null, channel, user, message));
   }
 
   @EventSubscriber

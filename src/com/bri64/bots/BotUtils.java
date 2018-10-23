@@ -47,15 +47,13 @@ public class BotUtils {
   }
 
   public static IVoiceChannel getConnectedChannel(IGuild guild, IUser user) {
-    IVoiceChannel channel = null;
     if (guild != null) {
       for (IVoiceChannel chnl : guild.getVoiceChannels()) {
         if (chnl.getConnectedUsers().contains(user)) {
-          channel = chnl;
-          break;
+          return chnl;
         }
       }
     }
-    return channel;
+    return null;
   }
 }

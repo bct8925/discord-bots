@@ -1,6 +1,5 @@
 package com.bri64.bots.audio.send;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -11,17 +10,15 @@ public class Playlist implements Iterable<Track> {
 
   private List<Track> tracks;
   private Track current;
-  private AudioPlayer player;
 
   public int size() {
     return tracks.size();
   }
 
   // Initialization
-  public Playlist(AudioPlayer player) {
+  public Playlist() {
     this.tracks = new LinkedList<>();
     this.current = null;
-    this.player = player;
   }
 
   public void addTrack(Track track) {
@@ -33,7 +30,7 @@ public class Playlist implements Iterable<Track> {
     if (current == null) {
       goStart();
     }
-    current.play(player);
+    current.play();
   }
 
   public void shuffle() {
@@ -50,7 +47,7 @@ public class Playlist implements Iterable<Track> {
         }
 
         current = cur;
-        current.play(player);
+        current.play();
         return true;
 
       } catch (IndexOutOfBoundsException ex) {
@@ -66,7 +63,7 @@ public class Playlist implements Iterable<Track> {
         }
 
         current = cur;
-        current.play(player);
+        current.play();
         return true;
       }
     }

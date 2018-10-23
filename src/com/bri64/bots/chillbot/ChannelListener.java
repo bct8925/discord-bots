@@ -1,6 +1,7 @@
 package com.bri64.bots.chillbot;
 
 import com.bri64.bots.audio.send.MusicScheduler;
+import com.bri64.bots.commands.CommandEvent;
 import com.bri64.bots.commands.music.KillCommand;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelMoveEvent;
@@ -22,7 +23,8 @@ public class ChannelListener {
     if (event.getUser().equals(bot.getUser())
         && (event.getNewChannel().equals(event.getGuild().getAFKChannel())
         || event.getNewChannel().getName().equalsIgnoreCase(kickChannel))) {
-      new KillCommand(null, scheduler).execute();
+      new KillCommand(new CommandEvent(event.getGuild(), event.getNewChannel(),
+          null, event.getUser(), null), scheduler).execute();
     }
   }
 }

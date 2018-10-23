@@ -20,13 +20,20 @@ public class MusicScheduler extends AudioEventAdapter {
   private DiscordBot bot;
   private AudioPlayerManager playerManager;
   private AudioPlayer audioPlayer;
-
   private Playlist playlist;
   private boolean playing;
   private LoopMode loopMode;
   private boolean shuffle;
   private boolean paused;
   private long pause_time;
+
+  public String getTrackInfo() {
+    return playlist.currentInfo();
+  }
+
+  public String getPlaylistInfo() {
+    return playlist.playlistInfo();
+  }
 
   public void setLoop(LoopMode loop) {
     this.loopMode = loop;
@@ -70,7 +77,7 @@ public class MusicScheduler extends AudioEventAdapter {
       @Override
       public void trackLoaded(AudioTrack track) {
         if (playlist == null) {
-          playlist = new Playlist(audioPlayer);
+          playlist = new Playlist();
         }
         playlist.addTrack(newTrack(track, url));
         BotUtils.log(bot, "Added 1 track(s) to the queue.");
@@ -80,7 +87,7 @@ public class MusicScheduler extends AudioEventAdapter {
       @Override
       public void playlistLoaded(AudioPlaylist audioPlaylist) {
         if (playlist == null) {
-          playlist = new Playlist(audioPlayer);
+          playlist = new Playlist();
         }
         for (AudioTrack track : audioPlaylist.getTracks()) {
           playlist.addTrack(newTrack(track, track.getInfo().uri));
@@ -155,9 +162,9 @@ public class MusicScheduler extends AudioEventAdapter {
         default:  // Not looping
           // Last track
           if (playlist.isLast() && next) {
-            stop();
+            kill();
           } else if (playlist.isFirst() && !next) {
-            stop();
+            kill();
           }
           // Any other track
           else {
@@ -187,7 +194,7 @@ public class MusicScheduler extends AudioEventAdapter {
         playlist.removeCurrent();
         play();
       } else {
-        stop();
+        kill();
       }
     }
   }
@@ -196,21 +203,17 @@ public class MusicScheduler extends AudioEventAdapter {
     return (playlist != null) && playlist.seek(search);
   }
 
-  public void stop() {
+  public void kill() {
+    stop();
+    bot.leaveChannels();
+  }
+
+  private void stop() {
     playing = false;
     playlist = null;
     BotUtils.log(bot, "Cleared queue.");
     bot.setStatus(null);
-    stopTrack();
-    bot.leaveChannels();
-  }
-
-  public String getTrackInfo() {
-    return playlist.currentInfo();
-  }
-
-  public String getPlaylistInfo() {
-    return playlist.playlistInfo();
+    audioPlayer.stopTrack();
   }
 
   public void sendSilence() {
@@ -243,7 +246,7 @@ public class MusicScheduler extends AudioEventAdapter {
   public void onPlayerPause(AudioPlayer player) {
     paused = true;
     pause_time = audioPlayer.getPlayingTrack().getPosition();
-    stopTrack();
+    audioPlayer.stopTrack();
   }
 
   @Override
@@ -263,11 +266,7 @@ public class MusicScheduler extends AudioEventAdapter {
   }
 
   // Helpers
-  void stopTrack() {
-    audioPlayer.stopTrack();
-  }
-
   private Track newTrack(AudioTrack track, String url) {
-    return new Track(this, track, url);
+    return new Track(audioPlayer, track, url);
   }
 }

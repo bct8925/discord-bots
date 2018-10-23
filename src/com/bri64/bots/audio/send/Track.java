@@ -7,12 +7,12 @@ import com.sedmelluq.discord.lavaplayer.track.TrackMarker;
 @SuppressWarnings({"WeakerAccess", "BooleanMethodIsAlwaysInverted"})
 class Track {
 
-  private MusicScheduler musicScheduler;
+  private AudioPlayer player;
   private AudioTrack track;
   private String url;
 
-  Track(MusicScheduler musicScheduler, AudioTrack track, String url) {
-    this.musicScheduler = musicScheduler;
+  public Track(final AudioPlayer player, final AudioTrack track, String url) {
+    this.player = player;
     this.track = track;
     this.url = url;
   }
@@ -37,13 +37,13 @@ class Track {
 
       clone.setPosition(startTime);
       if (endTime != 0) {
-        clone.setMarker(new TrackMarker(endTime, new StopMarker(musicScheduler)));
+        clone.setMarker(new TrackMarker(endTime, new StopMarker(player)));
       }
     }
     return clone;
   }
 
-  public void play(AudioPlayer player) {
+  public void play() {
     player.playTrack(cloneTrack());
   }
 

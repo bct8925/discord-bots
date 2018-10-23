@@ -28,7 +28,7 @@ public class ChatBot extends DiscordBot {
     // Initialize audio
     this.musicScheduler = new MusicScheduler(this);
     musicScheduler.setLoop(LoopMode.NONE);
-    musicScheduler.setVolume(5);
+    musicScheduler.setVolume(10);
 
     // Register listeners
     client.getDispatcher()

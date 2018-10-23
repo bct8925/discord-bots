@@ -1,6 +1,8 @@
 package com.bri64.bots;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import org.apache.commons.text.StringEscapeUtils;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
@@ -17,16 +19,11 @@ import sx.blah.discord.util.RequestBuffer;
 @SuppressWarnings("WeakerAccess")
 public abstract class DiscordBot {
 
-  protected RequestBuffer buffer;
+  protected IDiscordClient client;
+  protected String status;
   protected List<IGuild> guilds;
   protected String symbol;
   protected boolean ready;
-
-  public String getSymbol() {
-    return StringEscapeUtils.escapeJava(symbol);
-  }
-
-  protected IDiscordClient client;
 
   protected DiscordBot(final String symbol, final String token) {
     this.symbol = symbol;
@@ -41,20 +38,33 @@ public abstract class DiscordBot {
 
     // Set guilds
     this.guilds = client.getGuilds();
-  }
 
-  public abstract IGuild getGuild();
-
-  public boolean isReady() {
-    return ready;
+    // Keep updating status
+    new Timer().schedule(new TimerTask() {
+      @Override
+      public void run() {
+        updateStatus();
+      }
+    }, 0, 2000);
   }
 
   public IUser getUser() {
     return client.getOurUser();
   }
 
-  public List<IVoiceChannel> getVoiceChannels() {
-    return client.getConnectedVoiceChannels();
+  public void setStatus(String status) {
+    this.status = status;
+    updateStatus();
+  }
+
+  public String getSymbol() {
+    return StringEscapeUtils.escapeJava(symbol);
+  }
+
+  public abstract IGuild getGuild();
+
+  public boolean isReady() {
+    return ready;
   }
 
   private void login() {
@@ -66,22 +76,27 @@ public abstract class DiscordBot {
     BotUtils.log(this, "Ready!");
   }
 
-  public void joinChannel(IVoiceChannel channel) {
-    channel.join();
-    BotUtils.log(this, "Connected to \"" + channel.getName() + "\".");
+  public void updateStatus() {
+    if (status != null) {
+      RequestBuffer.request(() ->
+          client.changePresence(StatusType.ONLINE, ActivityType.LISTENING, status));
+    } else {
+      RequestBuffer.request(() ->
+          client.changePresence(StatusType.ONLINE));
+    }
   }
 
   public void dispatch(Event e) {
     client.getDispatcher().dispatch(e);
   }
 
-  public void setStatus(String status) {
-    if (status != null) {
-      RequestBuffer
-          .request(() -> client.changePresence(StatusType.ONLINE, ActivityType.LISTENING, status));
-    } else {
-      RequestBuffer.request(() -> client.changePresence(StatusType.ONLINE));
-    }
+  public List<IVoiceChannel> getVoiceChannels() {
+    return client.getConnectedVoiceChannels();
+  }
+
+  public void joinChannel(IVoiceChannel channel) {
+    channel.join();
+    BotUtils.log(this, "Connected to \"" + channel.getName() + "\".");
   }
 
   public void leaveChannels() {
