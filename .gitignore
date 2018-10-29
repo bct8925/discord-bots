@@ -3,5 +3,6 @@
 /.idea/
 /target/
 /out/
+/lib/
 /src/com/bri64/bots/BotLauncher.java
 /src/com/bri64/bots/DBManager.java
