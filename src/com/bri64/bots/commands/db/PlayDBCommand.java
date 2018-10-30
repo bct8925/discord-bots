@@ -6,6 +6,7 @@ import com.bri64.bots.audio.send.MusicScheduler;
 import com.bri64.bots.commands.CommandEvent;
 import com.bri64.bots.commands.error.InvalidCommandError;
 import com.bri64.bots.commands.error.InvalidGuildError;
+import com.bri64.bots.commands.error.NotConnectedError;
 import com.bri64.bots.commands.music.MusicCommand;
 import java.sql.SQLException;
 
@@ -34,6 +35,12 @@ public class PlayDBCommand extends MusicCommand {
       return;
     }
 
+    // User connected check
+    if (BotUtils.getConnectedChannel(getGuild(), getUser()) == null) {
+      new NotConnectedError(event).execute();
+      return;
+    }
+
     valid();
   }
 
@@ -49,9 +56,7 @@ public class PlayDBCommand extends MusicCommand {
 
       // Command exists
       if (url != null) {
-        if (BotUtils.getConnectedChannel(event.getGuild(), getUser()) != null) {
-          scheduler.loadTracks(getUser(), url, false);
-        }
+        scheduler.loadTracks(getUser(), url, false);
       }
 
       // Command not found

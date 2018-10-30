@@ -4,6 +4,7 @@ import com.bri64.bots.BotUtils;
 import com.bri64.bots.audio.send.MusicScheduler;
 import com.bri64.bots.commands.CommandEvent;
 import com.bri64.bots.commands.error.InvalidGuildError;
+import com.bri64.bots.commands.error.NotConnectedError;
 
 public class SeekCommand extends MusicCommand {
 
@@ -23,6 +24,12 @@ public class SeekCommand extends MusicCommand {
     // Valid guild check
     if (getGuild() == null) {
       new InvalidGuildError(event).execute();
+      return;
+    }
+
+    // User connected check
+    if (BotUtils.getConnectedChannel(getGuild(), getUser()) == null) {
+      new NotConnectedError(event).execute();
       return;
     }
 

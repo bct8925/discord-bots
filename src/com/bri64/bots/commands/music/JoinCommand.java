@@ -5,6 +5,7 @@ import com.bri64.bots.DiscordBot;
 import com.bri64.bots.audio.send.MusicScheduler;
 import com.bri64.bots.commands.CommandEvent;
 import com.bri64.bots.commands.error.InvalidGuildError;
+import com.bri64.bots.commands.error.NotConnectedError;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 
 public class JoinCommand extends MusicCommand {
@@ -25,19 +26,20 @@ public class JoinCommand extends MusicCommand {
       return;
     }
 
+    // User connected check
+    if (BotUtils.getConnectedChannel(getGuild(), getUser()) == null) {
+      new NotConnectedError(event).execute();
+      return;
+    }
+
     valid();
   }
 
   @Override
   public void valid() {
     IVoiceChannel channel = BotUtils.getConnectedChannel(getGuild(), getUser());
-    if (channel != null) {
-      scheduler.sendSilence();
-      bot.joinChannel(channel);
-    } else {
-      BotUtils.sendMessage(getUser().mention() + " " + "You must be in a voice channel!",
-          getUser().getOrCreatePMChannel());
-    }
+    scheduler.sendSilence();
+    bot.joinChannel(channel);
   }
 
   @Override

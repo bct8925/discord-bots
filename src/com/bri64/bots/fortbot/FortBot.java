@@ -23,4 +23,9 @@ public class FortBot extends DiscordBot {
   public IGuild getGuild() {
     return guilds.get(0);
   }
+
+  @Override
+  public void reboot() {
+
+  }
 }

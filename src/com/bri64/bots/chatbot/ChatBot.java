@@ -18,9 +18,6 @@ public class ChatBot extends DiscordBot {
     // Setup bot
     super(symbol, token);
 
-    // Fix dangling instances
-    fixDangles();
-
     // Connect to DB
     dbm = new DBManager(this);
     dbm.start();
@@ -42,5 +39,22 @@ public class ChatBot extends DiscordBot {
 
   public IGuild getGuild() {
     return guilds.get(0);
+  }
+
+  @Override
+  public void reboot() {
+    fixDangles();
+    this.musicScheduler = new MusicScheduler(this);
+    musicScheduler.setLoop(LoopMode.NONE);
+    musicScheduler.setVolume(10);
+
+    client.getDispatcher()
+        .unregisterListener(chatListener);
+    client.getDispatcher()
+        .unregisterListener(joinLeaveListener);
+    client.getDispatcher()
+        .registerListener(chatListener = new ChatListener(this, musicScheduler, dbm));
+    client.getDispatcher()
+        .registerListener(joinLeaveListener = new JoinLeaveListener(this, musicScheduler, dbm));
   }
 }

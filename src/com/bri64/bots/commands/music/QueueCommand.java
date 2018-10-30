@@ -4,7 +4,9 @@ import com.bri64.bots.BotUtils;
 import com.bri64.bots.audio.send.MusicScheduler;
 import com.bri64.bots.commands.CommandEvent;
 import com.bri64.bots.commands.error.InvalidGuildError;
+import com.bri64.bots.commands.error.NotConnectedError;
 
+@SuppressWarnings("Duplicates")
 public class QueueCommand extends MusicCommand {
 
   public QueueCommand(final CommandEvent event, final MusicScheduler scheduler) {
@@ -23,6 +25,12 @@ public class QueueCommand extends MusicCommand {
     // Valid guild check
     if (getGuild() == null) {
       new InvalidGuildError(event).execute();
+      return;
+    }
+
+    // User connected check
+    if (BotUtils.getConnectedChannel(getGuild(), getUser()) == null) {
+      new NotConnectedError(event).execute();
       return;
     }
 

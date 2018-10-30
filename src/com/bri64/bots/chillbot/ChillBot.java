@@ -19,9 +19,6 @@ public class ChillBot extends DiscordBot {
     // Setup bot
     super(symbol, token);
 
-    // Fix dangling instances
-    fixDangles();
-
     // Connect to DB
     dbm = new DBManager(this);
     dbm.start();
@@ -45,5 +42,19 @@ public class ChillBot extends DiscordBot {
   @Override
   public IGuild getGuild() {
     return guilds.get(0);
+  }
+
+  @Override
+  public void reboot() {
+    fixDangles();
+    this.musicScheduler = new MusicScheduler(this);
+    client.getDispatcher()
+        .unregisterListener(chillListener);
+    client.getDispatcher()
+        .unregisterListener(channelListener);
+    client.getDispatcher()
+        .registerListener(chillListener = new ChillListener(this, musicScheduler, dbm));
+    client.getDispatcher()
+        .registerListener(channelListener = new ChannelListener(this, musicScheduler));
   }
 }

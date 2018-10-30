@@ -39,6 +39,9 @@ public abstract class DiscordBot {
     // Set guilds
     this.guilds = client.getGuilds();
 
+    // Fix dangling instances
+    fixDangles();
+
     // Keep updating status
     new Timer().schedule(new TimerTask() {
       @Override
@@ -47,6 +50,10 @@ public abstract class DiscordBot {
       }
     }, 0, 2000);
   }
+
+  public abstract IGuild getGuild();
+
+  public abstract void reboot();
 
   public IUser getUser() {
     return client.getOurUser();
@@ -60,8 +67,6 @@ public abstract class DiscordBot {
   public String getSymbol() {
     return StringEscapeUtils.escapeJava(symbol);
   }
-
-  public abstract IGuild getGuild();
 
   public boolean isReady() {
     return ready;

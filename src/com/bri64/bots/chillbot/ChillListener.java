@@ -50,7 +50,7 @@ public class ChillListener extends MessageListener {
 
   public ChillListener(final ChillBot bot, final MusicScheduler scheduler,
       final DBManager database) {
-    super(CHILLBOT_HELP);
+    super(bot, CHILLBOT_HELP);
     this.bot = bot;
     this.scheduler = scheduler;
     this.database = database;
@@ -58,7 +58,7 @@ public class ChillListener extends MessageListener {
 
   @Override
   @EventSubscriber
-  public void onCommandEvent(CommandEvent event) {
+  public void onCommand(CommandEvent event) {
     // Setup variables
     String message = event.getMessage();
     String command = message.split(" ")[0];

@@ -27,16 +27,15 @@ public class ChatListener extends MessageListener {
 
   public ChatListener(final ChatBot bot, final MusicScheduler scheduler,
       final DBManager database) {
-    super(CHATBOT_HELP);
+    super(bot, CHATBOT_HELP);
     this.bot = bot;
     this.scheduler = scheduler;
     this.database = database;
   }
 
-
   @Override
   @EventSubscriber
-  public void onCommandEvent(CommandEvent event) {
+  public void onCommand(CommandEvent event) {
     String command = event.getMessage().split(" ")[0];
 
     // Coin

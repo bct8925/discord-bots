@@ -28,11 +28,11 @@ public class MusicScheduler extends AudioEventAdapter {
   private long pause_time;
 
   public String getTrackInfo() {
-    return playlist.currentInfo();
+    return (playlist != null) ? playlist.currentInfo() : "No songs playing!";
   }
 
   public String getPlaylistInfo() {
-    return playlist.playlistInfo();
+    return (playlist != null) ? playlist.currentInfo() : "No playlist queued!";
   }
 
   public void setLoop(LoopMode loop) {

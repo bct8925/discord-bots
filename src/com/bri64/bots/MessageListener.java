@@ -5,15 +5,19 @@ import com.bri64.bots.commands.HelpCommand;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MentionEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.shard.DisconnectedEvent;
+import sx.blah.discord.handle.impl.events.shard.DisconnectedEvent.Reason;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 
 public abstract class MessageListener {
 
+  private DiscordBot bot;
   private String help;
 
-  public MessageListener(final String help) {
+  public MessageListener(final DiscordBot bot, final String help) {
+    this.bot = bot;
     this.help = help;
   }
 
@@ -32,9 +36,19 @@ public abstract class MessageListener {
     IChannel channel = event.getChannel();
     IUser user = event.getMessage().getAuthor();
     String message = event.getMessage().getContent();
-    onCommandEvent(new CommandEvent(guild, null, channel, user, message));
+    onCommand(new CommandEvent(guild, null, channel, user, message));
   }
 
   @EventSubscriber
-  public abstract void onCommandEvent(CommandEvent event);
+  public void onShardDisconnect(DisconnectedEvent event) {
+    if (!event.getReason().equals(Reason.LOGGED_OUT)) {
+      BotUtils.log(bot, "Connection Error: " + event.getReason().name());
+      BotUtils.log(bot, "Rebooting system...");
+      bot.reboot();
+      BotUtils.log(bot, "Rebooted!");
+    }
+  }
+
+  @EventSubscriber
+  public abstract void onCommand(CommandEvent event);
 }

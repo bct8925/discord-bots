@@ -4,16 +4,16 @@ import com.bri64.bots.BotUtils;
 import com.bri64.bots.commands.CommandEvent;
 import com.bri64.bots.commands.DiscordCommand;
 
-public class InvalidGuildError extends DiscordCommand {
+public class NotConnectedError extends DiscordCommand {
 
-  public InvalidGuildError(CommandEvent event) {
+  public NotConnectedError(CommandEvent event) {
     super(event);
   }
 
   @Override
   public void execute() {
     BotUtils.sendMessage(getUser().mention() + " " +
-            "Error, command must be run from guild.",
+            "Error, user must be in a voice channel.",
         getUser().getOrCreatePMChannel());
   }
 }
