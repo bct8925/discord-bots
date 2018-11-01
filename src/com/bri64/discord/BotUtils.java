@@ -56,4 +56,9 @@ public class BotUtils {
     }
     return null;
   }
+
+  public static boolean isAlone(IUser user, IVoiceChannel channel) {
+    List<IUser> connectedUsers = channel.getConnectedUsers();
+    return connectedUsers.contains(user) && connectedUsers.size() == 1;
+  }
 }

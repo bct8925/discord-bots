@@ -1,5 +1,6 @@
 package com.bri64.discord.chillbot;
 
+import com.bri64.discord.BotUtils;
 import com.bri64.discord.audio.send.MusicScheduler;
 import com.bri64.discord.commands.music.KillCommand;
 import java.util.List;
@@ -46,6 +47,8 @@ public class ChannelListener {
         new KillCommand(null, scheduler, true).execute();
       } else if (event.getVoiceChannel().getConnectedUsers().size() == 1) {
         startTimer();
+      } else if (event.getVoiceChannel().getConnectedUsers().size() > 1) {
+        cleanTimer();
       }
     }
   }
@@ -53,9 +56,8 @@ public class ChannelListener {
   @EventSubscriber
   public void onUserVoiceChannelLeave(UserVoiceChannelLeaveEvent event) {
     if (!event.getUser().equals(bot.getUser())) {
-      List<IUser> connectedUsers = event.getVoiceChannel().getConnectedUsers();
-      if (connectedUsers.contains(bot.getUser())
-          && connectedUsers.size() == 1) {
+      if (BotUtils.isAlone(bot.getUser(), event.getVoiceChannel())) {
+        System.out.println("timer running");
         startTimer();
       }
     }
@@ -66,7 +68,11 @@ public class ChannelListener {
     afkTimer.schedule(new TimerTask() {
       @Override
       public void run() {
-        new KillCommand(null, scheduler, true).execute();
+        if (BotUtils.isAlone(
+            bot.getUser(),
+            BotUtils.getConnectedChannel(bot.getGuild(), bot.getUser()))) {
+          new KillCommand(null, scheduler, true).execute();
+        }
       }
     }, ONE_MINUTE);
   }
