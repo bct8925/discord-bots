@@ -7,13 +7,13 @@ import com.bri64.discord.commands.DiscordCommand;
 public class InvalidGuildError extends DiscordCommand {
 
   public InvalidGuildError(CommandEvent event) {
-    super(event, false);
+    super(event);
   }
 
   @Override
   public void execute() {
     BotUtils.sendMessage(getUser().mention() + " " +
             "Error, command must be run from guild.",
-        getUser().getOrCreatePMChannel());
+        getOutChannel());
   }
 }

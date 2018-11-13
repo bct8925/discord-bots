@@ -65,22 +65,22 @@ public class ChillListener extends MessageListener {
 
     // Join
     if (command.equalsIgnoreCase(bot.getSymbol() + "join")) {
-      new JoinCommand(event, bot, scheduler, false).execute();
+      new JoinCommand(event, bot, scheduler).execute();
     }
 
     // Play
     else if (command.equalsIgnoreCase(bot.getSymbol() + "play")) {
-      new PlayCommand(event, scheduler, false).execute();
+      new PlayCommand(event, scheduler).execute();
     }
 
     // Queue
     else if (command.equalsIgnoreCase(bot.getSymbol() + "queue")) {
-      new QueueCommand(event, scheduler, false).execute();
+      new QueueCommand(event, scheduler).execute();
     }
 
     // Pause
     else if (command.equalsIgnoreCase(bot.getSymbol() + "pause")) {
-      new PauseCommand(event, scheduler, false).execute();
+      new PauseCommand(event, scheduler).execute();
     }
 
     // Song Info
@@ -96,52 +96,52 @@ public class ChillListener extends MessageListener {
     // Next
     else if (command.equalsIgnoreCase(bot.getSymbol() + "next")
         || command.equalsIgnoreCase(bot.getSymbol() + "skip")) {
-      new NextCommand(event, scheduler, false).execute();
+      new NextCommand(event, scheduler).execute();
     }
 
     // Previous
     else if (command.equalsIgnoreCase(bot.getSymbol() + "prev")) {
-      new PreviousCommand(event, scheduler, false).execute();
+      new PreviousCommand(event, scheduler).execute();
     }
 
     // Seek
     else if (command.equalsIgnoreCase(bot.getSymbol() + "seek")) {
-      new SeekCommand(event, scheduler, false).execute();
+      new SeekCommand(event, scheduler).execute();
     }
 
     // Loop
     else if (command.equalsIgnoreCase(bot.getSymbol() + "loop")) {
-      new LoopCommand(event, scheduler, false).execute();
+      new LoopCommand(event, scheduler).execute();
     }
 
     // Shuffle
     else if (command.equalsIgnoreCase(bot.getSymbol() + "shuffle")) {
-      new ShuffleCommand(event, scheduler, false).execute();
+      new ShuffleCommand(event, scheduler).execute();
     }
 
     // Remove
     else if (command.equalsIgnoreCase(bot.getSymbol() + "remove")) {
-      new RemoveTrackCommand(event, scheduler, false).execute();
+      new RemoveTrackCommand(event, scheduler).execute();
     }
 
     // Volume
     else if (command.equalsIgnoreCase(bot.getSymbol() + "volume")) {
-      new VolumeCommand(event, scheduler, false).execute();
+      new VolumeCommand(event, scheduler).execute();
     }
 
     // Add
     else if (command.equalsIgnoreCase(bot.getSymbol() + "add")) {
-      new AddDBCommand(event, database, false).execute();
+      new AddDBCommand(event, database).execute();
     }
 
     // Kill
     else if (message.equalsIgnoreCase(bot.getSymbol() + "kill")) {
-      new KillCommand(event, scheduler, false).execute();
+      new KillCommand(event, scheduler).execute();
     }
 
     // Else
     else if (message.matches("^[" + bot.getSymbol() + "][^" + bot.getSymbol() + "].*")) {
-      new PlayDBCommand(event, scheduler, database, false).execute();
+      new PlayDBCommand(event, scheduler, database).execute();
     }
   }
 }

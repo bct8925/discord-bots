@@ -2,14 +2,12 @@ package com.bri64.discord.audio.send;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
-public class Playlist implements Iterable<Track> {
+public class Playlist {
 
-  private List<Track> tracks;
+  private LinkedList<Track> tracks;
   private Track current;
 
   public int size() {
@@ -88,13 +86,13 @@ public class Playlist implements Iterable<Track> {
 
   public void goStart() {
     if (!tracks.isEmpty()) {
-      current = getFirst();
+      current = tracks.getFirst();
     }
   }
 
   public void goEnd() {
     if (!tracks.isEmpty()) {
-      current = getLast();
+      current = tracks.getLast();
     }
   }
 
@@ -124,39 +122,18 @@ public class Playlist implements Iterable<Track> {
     for (int i = start; i < end; i++) {
       result.append(i + 1);
       result.append(". ");
-      result.append(tracks.get(i).toString());
+      result.append(tracks.get(i).getTitle());
       result.append("\n");
     }
     return result.toString();
   }
 
-  public String currentText() {
-    return (current != null) ? current.toString() : "null";
-  }
-
-  public String currentInfo() {
-    return (current != null) ? current.info() : "null";
-  }
-
   public boolean isFirst() {
-    return current != null && current.equals(getFirst());
+    return current != null && current.equals(tracks.getFirst());
   }
 
   public boolean isLast() {
-    return current != null && current.equals(getLast());
+    return current != null && current.equals(tracks.getLast());
   }
 
-  // Helpers
-  private Track getFirst() {
-    return (Track) ((LinkedList) tracks).getFirst();
-  }
-
-  private Track getLast() {
-    return (Track) ((LinkedList) tracks).getLast();
-  }
-
-  @Override
-  public Iterator<Track> iterator() {
-    return tracks.iterator();
-  }
 }

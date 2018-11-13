@@ -7,12 +7,12 @@ import com.bri64.discord.commands.CommandEvent;
 public class SongInfoCommand extends MusicCommand {
 
   public SongInfoCommand(final CommandEvent event, final MusicScheduler scheduler) {
-    super(event, scheduler, false);
+    super(event, scheduler);
   }
 
   @Override
   public void execute() {
     BotUtils.sendMessage(getUser().mention() + " " + scheduler.getTrackInfo(),
-        getUser().getOrCreatePMChannel());
+        getOutChannel());
   }
 }

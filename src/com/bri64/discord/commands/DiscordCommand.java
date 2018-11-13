@@ -2,11 +2,8 @@ package com.bri64.discord.commands;
 
 public class DiscordCommand extends AbstractCommand {
 
-  protected boolean force;
-
-  protected DiscordCommand(CommandEvent event, boolean force) {
+  protected DiscordCommand(CommandEvent event) {
     super(event);
-    this.force = force;
   }
 
   @Override

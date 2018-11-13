@@ -9,8 +9,8 @@ public abstract class MusicCommand extends DiscordCommand {
 
   protected MusicScheduler scheduler;
 
-  protected MusicCommand(final CommandEvent event, final MusicScheduler scheduler, boolean force) {
-    super(event, force);
+  protected MusicCommand(final CommandEvent event, final MusicScheduler scheduler) {
+    super(event);
     this.scheduler = scheduler;
   }
 }

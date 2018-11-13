@@ -7,8 +7,8 @@ public class HelpCommand extends DiscordCommand {
 
   private String help;
 
-  public HelpCommand(final CommandEvent event, final String help, boolean force) {
-    super(event, force);
+  public HelpCommand(final CommandEvent event, final String help) {
+    super(event);
     this.help = help;
   }
 
@@ -21,6 +21,6 @@ public class HelpCommand extends DiscordCommand {
 
   @Override
   public void valid() {
-    BotUtils.sendMessage(getUser().mention() + " " + help, getUser().getOrCreatePMChannel());
+    BotUtils.sendMessage(getUser().mention() + " " + help, getOutChannel());
   }
 }

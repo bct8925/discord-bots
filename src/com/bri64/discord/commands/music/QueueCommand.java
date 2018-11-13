@@ -9,14 +9,14 @@ import com.bri64.discord.commands.error.NotConnectedError;
 @SuppressWarnings("Duplicates")
 public class QueueCommand extends MusicCommand {
 
-  public QueueCommand(final CommandEvent event, final MusicScheduler scheduler, boolean force) {
-    super(event, scheduler, force);
+  public QueueCommand(final CommandEvent event, final MusicScheduler scheduler) {
+    super(event, scheduler);
   }
 
   @Override
   public void execute() {
     // Manual override
-    if (force) {
+    if (shouldForce()) {
       valid();
       return;
     }
@@ -45,13 +45,18 @@ public class QueueCommand extends MusicCommand {
 
   @Override
   public void valid() {
-    String URL = getMessage().split(" ")[1];
-    scheduler.loadTracks(getUser(), URL, false);
+    String url = getMessage().split(" ")[1];
+    if (!scheduler.validateURL(url)) {
+      BotUtils.sendMessage(getUser().mention() + " Error loading audio for \" " + url + " \"!",
+          getOutChannel());
+      return;
+    }
+    scheduler.loadTracks(getVoiceChannel(), url, false);
   }
 
   @Override
   public void invalidArgs() {
     BotUtils.sendMessage(getUser().mention() + " " + "Invalid arguments! Usage: queue url",
-        getUser().getOrCreatePMChannel());
+        getOutChannel());
   }
 }

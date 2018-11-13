@@ -7,13 +7,13 @@ import com.bri64.discord.commands.DiscordCommand;
 public class NotConnectedError extends DiscordCommand {
 
   public NotConnectedError(CommandEvent event) {
-    super(event, false);
+    super(event);
   }
 
   @Override
   public void execute() {
     BotUtils.sendMessage(getUser().mention() + " " +
             "Error, user must be in a voice channel.",
-        getUser().getOrCreatePMChannel());
+        getOutChannel());
   }
 }

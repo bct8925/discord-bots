@@ -48,7 +48,7 @@ public abstract class DiscordBot {
       public void run() {
         updateStatus();
       }
-    }, 0, 2000);
+    }, 3000, 2000);
   }
 
   public abstract IGuild getGuild();

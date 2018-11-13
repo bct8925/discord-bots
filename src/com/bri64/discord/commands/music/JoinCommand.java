@@ -13,15 +13,15 @@ public class JoinCommand extends MusicCommand {
   private DiscordBot bot;
 
   public JoinCommand(final CommandEvent event, final DiscordBot bot,
-      final MusicScheduler scheduler, boolean force) {
-    super(event, scheduler, force);
+      final MusicScheduler scheduler) {
+    super(event, scheduler);
     this.bot = bot;
   }
 
   @Override
   public void execute() {
     // Manual override
-    if (force) {
+    if (shouldForce()) {
       valid();
       return;
     }
@@ -51,6 +51,6 @@ public class JoinCommand extends MusicCommand {
   @Override
   public void invalidArgs() {
     BotUtils.sendMessage(getUser().mention() + " " + "Invalid arguments! Usage: play url",
-        getUser().getOrCreatePMChannel());
+        getOutChannel());
   }
 }

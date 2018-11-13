@@ -8,13 +8,13 @@ import com.bri64.discord.commands.DiscordCommand;
 public class InvalidCommandError extends DiscordCommand {
 
   public InvalidCommandError(final CommandEvent event) {
-    super(event, false);
+    super(event);
   }
 
   @Override
   public void execute() {
     BotUtils
         .sendMessage(getUser().mention() + " " + "\"" + getMessage() + "\" is not a valid command!",
-            getUser().getOrCreatePMChannel());
+            getOutChannel());
   }
 }

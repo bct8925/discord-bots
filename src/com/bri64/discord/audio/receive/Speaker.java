@@ -60,8 +60,8 @@ public class Speaker {
     if (translator.getResult().toLowerCase().contains("chill")
         || translator.getResult().toLowerCase().contains("bought")) {
       bot.dispatch(new CommandEvent(bot.getGuild(),
-          BotUtils.getConnectedChannel(bot.getGuild(), user),
-          null, user, bot.getSymbol() + "chillstep"));
+          user, BotUtils.getConnectedChannel(bot.getGuild(), user),
+          null, user.getOrCreatePMChannel(), bot.getSymbol() + "chillstep", false));
     }
   }
 

@@ -25,10 +25,16 @@ public class BotUtils {
   }
 
   public static void sendMessage(String message, IChannel channel) {
+    if (channel == null) {
+      return;
+    }
     RequestBuffer.request(() -> channel.sendMessage(message));
   }
 
   public static void sendMessage(EmbedObject embed, IChannel channel) {
+    if (channel == null) {
+      return;
+    }
     RequestBuffer.request(() -> channel.sendMessage(embed));
   }
 

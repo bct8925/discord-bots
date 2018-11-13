@@ -2,6 +2,7 @@ package com.bri64.discord.chillbot;
 
 import com.bri64.discord.BotUtils;
 import com.bri64.discord.audio.send.MusicScheduler;
+import com.bri64.discord.commands.CommandEvent;
 import com.bri64.discord.commands.music.KillCommand;
 import java.util.List;
 import java.util.Timer;
@@ -44,7 +45,8 @@ public class ChannelListener {
     } else {
       if (event.getVoiceChannel().equals(event.getGuild().getAFKChannel())
           || event.getVoiceChannel().getName().equalsIgnoreCase(kickChannel)) {
-        new KillCommand(null, scheduler, true).execute();
+        new KillCommand(new CommandEvent(bot.getGuild(), null, null, null, null, null, true),
+            scheduler).execute();
       } else if (event.getVoiceChannel().getConnectedUsers().size() == 1) {
         startTimer();
       } else if (event.getVoiceChannel().getConnectedUsers().size() > 1) {
@@ -57,7 +59,6 @@ public class ChannelListener {
   public void onUserVoiceChannelLeave(UserVoiceChannelLeaveEvent event) {
     if (!event.getUser().equals(bot.getUser())) {
       if (BotUtils.isAlone(bot.getUser(), event.getVoiceChannel())) {
-        System.out.println("timer running");
         startTimer();
       }
     }
@@ -71,7 +72,9 @@ public class ChannelListener {
         if (BotUtils.isAlone(
             bot.getUser(),
             BotUtils.getConnectedChannel(bot.getGuild(), bot.getUser()))) {
-          new KillCommand(null, scheduler, true).execute();
+          BotUtils.log(bot, "Lonely, disconnecting...");
+          new KillCommand(new CommandEvent(bot.getGuild(), null, null, null, null, null, true),
+              scheduler).execute();
         }
       }
     }, ONE_MINUTE);

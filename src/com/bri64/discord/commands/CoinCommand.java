@@ -7,12 +7,12 @@ import java.util.Random;
 public class CoinCommand extends DiscordCommand {
 
   public CoinCommand(final CommandEvent event) {
-    super(event, false);
+    super(event);
   }
 
   @Override
   public void execute() {
     BotUtils.sendMessage(getUser().mention() + " "
-        + ((new Random().nextBoolean()) ? "Heads!" : "Tails!"), getUser().getOrCreatePMChannel());
+        + ((new Random().nextBoolean()) ? "Heads!" : "Tails!"), getOutChannel());
   }
 }

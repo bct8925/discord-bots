@@ -2,6 +2,7 @@ package com.bri64.discord.audio.send;
 
 import com.bri64.discord.BotUtils;
 import com.bri64.discord.DiscordBot;
+import com.bri64.discord.commands.music.PlaylistChangedEvent;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -12,9 +13,10 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import sx.blah.discord.handle.obj.IUser;
+import java.util.concurrent.Future;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 
+@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 public class MusicScheduler extends AudioEventAdapter {
 
   private DiscordBot bot;
@@ -28,11 +30,11 @@ public class MusicScheduler extends AudioEventAdapter {
   private long pause_time;
 
   public String getTrackTitle() {
-    return (playlist != null) ? playlist.currentText() : "No song playing!";
+    return (playlist != null) ? playlist.getCurrent().getTitle() : "No song playing!";
   }
 
   public String getTrackInfo() {
-    return (playlist != null) ? playlist.currentInfo() : "No song playing!";
+    return (playlist != null) ? playlist.getCurrent().info() : "No song playing!";
   }
 
   public String getPlaylistInfo() {
@@ -41,6 +43,10 @@ public class MusicScheduler extends AudioEventAdapter {
 
   public boolean isPaused() {
     return paused;
+  }
+
+  public LoopMode getLoop() {
+    return loopMode;
   }
 
   public void setLoop(LoopMode loop) {
@@ -80,7 +86,37 @@ public class MusicScheduler extends AudioEventAdapter {
   }
 
   // Functions
-  public void loadTracks(IUser user, String url, boolean skip) {
+  public boolean validateURL(String url) {
+    final boolean[] success = {false};
+    Future<Void> future = playerManager.loadItem(url, new AudioLoadResultHandler() {
+
+      @Override
+      public void trackLoaded(AudioTrack track) {
+        success[0] = true;
+      }
+
+      @Override
+      public void playlistLoaded(AudioPlaylist playlist) {
+        success[0] = true;
+      }
+
+      @Override
+      public void noMatches() {
+
+      }
+
+      @Override
+      public void loadFailed(FriendlyException exception) {
+
+      }
+    });
+    while (!future.isDone()) {
+      BotUtils.waiting();
+    }
+    return success[0];
+  }
+
+  public void loadTracks(IVoiceChannel channel, String url, boolean skip) {
     playerManager.loadItem(url, new AudioLoadResultHandler() {
       @Override
       public void trackLoaded(AudioTrack track) {
@@ -109,21 +145,16 @@ public class MusicScheduler extends AudioEventAdapter {
 
       @Override
       public void noMatches() {
-        BotUtils.sendMessage(user.mention() + " Error loading audio for \" " + url + " \"!",
-            user.getOrCreatePMChannel());
       }
 
       @Override
       public void loadFailed(FriendlyException throwable) {
-        BotUtils.sendMessage(user.mention() + " Error loading audio for \" " + url + " \"!",
-            user.getOrCreatePMChannel());
       }
 
       private void start() {
         if (!playing) {
           playing = true;
           if (bot.getVoiceChannels().isEmpty()) {
-            IVoiceChannel channel = BotUtils.getConnectedChannel(bot.getGuild(), user);
             if (channel != null) {
               bot.joinChannel(channel);
             }
@@ -133,6 +164,8 @@ public class MusicScheduler extends AudioEventAdapter {
         } else if (skip) {
           playlist.goEnd();
           play();
+        } else {
+          bot.dispatch(new PlaylistChangedEvent(bot.getGuild(), null, false, false));
         }
       }
     });
@@ -140,8 +173,12 @@ public class MusicScheduler extends AudioEventAdapter {
 
   private void play() {
     if (playlist != null) {
-      bot.setStatus(playlist.currentText());
-      playlist.play(audioPlayer);
+      bot.setStatus(playlist.getCurrent().getTitle());
+      bot.dispatch(new PlaylistChangedEvent(bot.getGuild(), playlist.getCurrent(), false, false));
+      pause_time = 0;
+      if (!paused) {
+        playlist.play(audioPlayer);
+      }
     }
   }
 
@@ -151,11 +188,14 @@ public class MusicScheduler extends AudioEventAdapter {
         paused = true;
         pause_time = audioPlayer.getPlayingTrack().getPosition();
         audioPlayer.stopTrack();
+        bot.dispatch(new PlaylistChangedEvent(bot.getGuild(), playlist.getCurrent(), true, false));
       } else {
         AudioTrack track = playlist.getCurrent().cloneTrack(audioPlayer);
         track.setPosition(pause_time);
         audioPlayer.playTrack(track);
+        pause_time = 0;
         paused = false;
+        bot.dispatch(new PlaylistChangedEvent(bot.getGuild(), playlist.getCurrent(), false, true));
       }
     }
   }
@@ -222,6 +262,7 @@ public class MusicScheduler extends AudioEventAdapter {
 
   public void kill() {
     stop();
+    bot.dispatch(new PlaylistChangedEvent(bot.getGuild(), null, false, false));
     bot.leaveChannels();
   }
 

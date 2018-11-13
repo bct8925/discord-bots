@@ -2,6 +2,7 @@ package com.bri64.discord.commands.db;
 
 import com.bri64.discord.BotUtils;
 import com.bri64.discord.DBManager;
+import com.bri64.discord.audio.send.MusicScheduler;
 import com.bri64.discord.commands.CommandEvent;
 import com.bri64.discord.commands.DiscordCommand;
 import com.bri64.discord.commands.error.InvalidGuildError;
@@ -9,13 +10,15 @@ import java.sql.SQLException;
 
 public class JoinLeaveDBCommand extends DiscordCommand {
 
+  private MusicScheduler scheduler;
   private DBManager database;
   private boolean join;
   private String type;
 
-  public JoinLeaveDBCommand(final CommandEvent event, final DBManager database, boolean join,
-      boolean force) {
-    super(event, force);
+  public JoinLeaveDBCommand(final CommandEvent event, final MusicScheduler scheduler,
+      final DBManager database, boolean join) {
+    super(event);
+    this.scheduler = scheduler;
     this.database = database;
     this.join = join;
     this.type = (join) ? "join" : "leave";
@@ -24,7 +27,7 @@ public class JoinLeaveDBCommand extends DiscordCommand {
   @Override
   public void execute() {
     // Manual override
-    if (force) {
+    if (shouldForce()) {
       valid();
       return;
     }
@@ -49,14 +52,31 @@ public class JoinLeaveDBCommand extends DiscordCommand {
   public void valid() {
     try {
       String userName = getUser().getName() + "#" + getUser().getDiscriminator();
-      String URL = getMessage().split(" ")[1];
-      if (join) {
-        database.setJoin(userName, URL);
-      } else {
-        database.setLeave(userName, URL);
+      String url = getMessage().split(" ")[1];
+      boolean disabled = false;
+      if (url.equalsIgnoreCase("null")) {
+        disabled = true;
+      } else if (!scheduler.validateURL(url)) {
+        BotUtils.sendMessage(getUser().mention() + " " + url + " is invalid!",
+            getOutChannel());
+        return;
       }
-      BotUtils.sendMessage(
-          getUser().mention() + " " + type + " set to " + URL, getUser().getOrCreatePMChannel());
+
+      if (join) {
+        database.setJoin(userName, url);
+      } else {
+        database.setLeave(userName, url);
+      }
+
+      if (!disabled) {
+        BotUtils.sendMessage(
+            getUser().mention() + " " + type + " set to " + url,
+            getOutChannel());
+      } else {
+        BotUtils.sendMessage(
+            getUser().mention() + " " + "disabling " + type + " sound!",
+            getOutChannel());
+      }
     } catch (SQLException e) {
       database.reconnect();
     }

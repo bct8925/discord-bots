@@ -29,13 +29,12 @@ public class ChillBot extends DiscordBot {
     // Initialize audio
     this.musicScheduler = new MusicScheduler(this);
 
-    // Initialize web server
-    this.webPlayer = new WebPlayer(this, musicScheduler);
-
     // Initialize voice
     //this.voiceListener = new ActivateListener(this);
 
     // Register listeners
+    client.getDispatcher()
+        .registerListener(webPlayer = new WebPlayer(this, musicScheduler));
     client.getDispatcher()
         .registerListener(chillListener = new ChillListener(this, musicScheduler, dbm));
     client.getDispatcher()

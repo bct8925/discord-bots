@@ -5,7 +5,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.TrackMarker;
 
 @SuppressWarnings({"WeakerAccess", "BooleanMethodIsAlwaysInverted"})
-class Track {
+public class Track {
 
   private AudioTrack track;
   private String url;
@@ -49,13 +49,16 @@ class Track {
     return track.getInfo().title.toLowerCase().matches(".*" + query.toLowerCase() + ".*");
   }
 
-  String info() {
+  public String info() {
     return (track == null) ? "null"
-        : "\"" + track.getInfo().title + "\", by " + track.getInfo().author + "\n" + url;
+        : "\"" + getTitle() + "\", by " + track.getInfo().author + "\n" + getURL();
   }
 
-  @Override
-  public String toString() {
-    return ("\"" + track.getInfo().title + "\"");
+  public String getURL() {
+    return url;
+  }
+
+  public String getTitle() {
+    return (track == null) ? "null" : (track.getInfo().title);
   }
 }

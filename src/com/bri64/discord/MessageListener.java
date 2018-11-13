@@ -5,9 +5,9 @@ import com.bri64.discord.commands.HelpCommand;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MentionEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.IVoiceChannel;
 
 public abstract class MessageListener {
 
@@ -22,19 +22,23 @@ public abstract class MessageListener {
   @EventSubscriber
   public void onMention(MentionEvent event) {
     IGuild guild = (event.getChannel().isPrivate()) ? null : event.getGuild();
-    IChannel channel = event.getChannel();
     IUser user = event.getMessage().getAuthor();
+    IVoiceChannel voiceChannel = BotUtils.getConnectedChannel(guild, user);
     String message = event.getMessage().getContent();
-    new HelpCommand(new CommandEvent(guild, null, channel, user, message), help, false).execute();
+    new HelpCommand(new CommandEvent(guild, user, voiceChannel,
+        event.getChannel(), user.getOrCreatePMChannel(),
+        message, false), help).execute();
   }
 
   @EventSubscriber
   public void onMessage(MessageReceivedEvent event) {
     IGuild guild = (event.getChannel().isPrivate()) ? null : event.getGuild();
-    IChannel channel = event.getChannel();
     IUser user = event.getMessage().getAuthor();
+    IVoiceChannel voiceChannel = BotUtils.getConnectedChannel(guild, user);
     String message = event.getMessage().getContent();
-    onCommand(new CommandEvent(guild, null, channel, user, message));
+    onCommand(new CommandEvent(guild,
+        user, voiceChannel, event.getChannel(), user.getOrCreatePMChannel(),
+        message, false));
   }
 
   /*@EventSubscriber

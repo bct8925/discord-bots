@@ -9,14 +9,14 @@ import com.bri64.discord.commands.error.NotConnectedError;
 @SuppressWarnings("Duplicates")
 public class VolumeCommand extends MusicCommand {
 
-  public VolumeCommand(final CommandEvent event, final MusicScheduler scheduler, boolean force) {
-    super(event, scheduler, force);
+  public VolumeCommand(final CommandEvent event, final MusicScheduler scheduler) {
+    super(event, scheduler);
   }
 
   @Override
   public void execute() {
     // Manual override
-    if (force) {
+    if (shouldForce()) {
       valid();
       return;
     }
@@ -54,13 +54,13 @@ public class VolumeCommand extends MusicCommand {
       }
     } catch (NumberFormatException ex) {
       BotUtils.sendMessage(getUser().mention() + " " + "Percent must be a number 1-50!",
-          getUser().getOrCreatePMChannel());
+          getOutChannel());
     }
   }
 
   @Override
   public void invalidArgs() {
     BotUtils.sendMessage(getUser().mention() + " " + "Invalid arguments! Usage: volume percent",
-        getUser().getOrCreatePMChannel());
+        getOutChannel());
   }
 }

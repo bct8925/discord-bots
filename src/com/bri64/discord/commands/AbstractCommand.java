@@ -3,6 +3,7 @@ package com.bri64.discord.commands;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.IVoiceChannel;
 
 @SuppressWarnings("WeakerAccess")
 public abstract class AbstractCommand implements Command {
@@ -17,8 +18,16 @@ public abstract class AbstractCommand implements Command {
     return event.getGuild();
   }
 
-  public IChannel getChannel() {
-    return event.getChannel();
+  public IVoiceChannel getVoiceChannel() {
+    return event.getVoiceChannel();
+  }
+
+  public IChannel getInChannel() {
+    return event.getInChannel();
+  }
+
+  public IChannel getOutChannel() {
+    return event.getOutChannel();
   }
 
   public IUser getUser() {
@@ -27,5 +36,9 @@ public abstract class AbstractCommand implements Command {
 
   public String getMessage() {
     return event.getMessage();
+  }
+
+  public boolean shouldForce() {
+    return event.shouldForce();
   }
 }

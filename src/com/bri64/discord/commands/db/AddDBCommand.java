@@ -11,15 +11,15 @@ public class AddDBCommand extends DiscordCommand {
 
   private DBManager database;
 
-  public AddDBCommand(final CommandEvent event, final DBManager database, boolean force) {
-    super(event, force);
+  public AddDBCommand(final CommandEvent event, final DBManager database) {
+    super(event);
     this.database = database;
   }
 
   @Override
   public void execute() {
     // Manual override
-    if (force) {
+    if (shouldForce()) {
       valid();
       return;
     }
@@ -49,7 +49,7 @@ public class AddDBCommand extends DiscordCommand {
         String newurl = getMessage().split(" ")[2];
         database.addCommand(newcomm, newurl);
         BotUtils.sendMessage(getUser().mention() + " \"" + newcomm + "\" added successfully!",
-            getUser().getOrCreatePMChannel());
+            getOutChannel());
       }
     } catch (SQLException e) {
       database.reconnect();
@@ -59,6 +59,6 @@ public class AddDBCommand extends DiscordCommand {
   @Override
   public void invalidArgs() {
     BotUtils.sendMessage(getUser().mention() + " " + "Invalid arguments! Usage: add command url",
-        getUser().getOrCreatePMChannel());
+        getOutChannel());
   }
 }

@@ -8,15 +8,14 @@ import com.bri64.discord.commands.error.NotConnectedError;
 
 public class RemoveTrackCommand extends MusicCommand {
 
-  public RemoveTrackCommand(final CommandEvent event, final MusicScheduler scheduler,
-      boolean force) {
-    super(event, scheduler, force);
+  public RemoveTrackCommand(final CommandEvent event, final MusicScheduler scheduler) {
+    super(event, scheduler);
   }
 
   @Override
   public void execute() {
     // Manual override
-    if (force) {
+    if (shouldForce()) {
       valid();
       return;
     }

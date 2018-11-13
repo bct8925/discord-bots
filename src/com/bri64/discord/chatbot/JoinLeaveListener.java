@@ -38,17 +38,18 @@ public class JoinLeaveListener {
     if (!event.getUser().equals(bot.getUser())) {
       String username = event.getUser().getName() + "#" + event.getUser().getDiscriminator();
       try {
-        String[] data = dbManager
-            .getJoinLeave(username);
+        String[] data = dbManager.getJoinLeave(username);
         if (data != null) {
+          if (!scheduler.validateURL(data[0])) {
+            return;
+          }
           event.getVoiceChannel().join();
-          scheduler.loadTracks(event.getUser(), data[0], true);
+          scheduler.loadTracks(event.getVoiceChannel(), data[0], true);
         } else {
           event.getVoiceChannel().join();
           String url = "http://brianstrains.com/train2.mp3";
-          scheduler.loadTracks(event.getUser(), url, true);
-          dbManager
-              .setJoin(username, url);
+          scheduler.loadTracks(event.getVoiceChannel(), url, true);
+          dbManager.setJoin(username, url);
         }
       } catch (SQLException e) {
         dbManager.reconnect();
@@ -61,17 +62,18 @@ public class JoinLeaveListener {
     if (!event.getUser().equals(bot.getUser())) {
       String username = event.getUser().getName() + "#" + event.getUser().getDiscriminator();
       try {
-        String[] data = dbManager
-            .getJoinLeave(username);
+        String[] data = dbManager.getJoinLeave(username);
         if (data != null) {
+          if (!scheduler.validateURL(data[0])) {
+            return;
+          }
           event.getVoiceChannel().join();
-          scheduler.loadTracks(event.getUser(), data[1], true);
+          scheduler.loadTracks(event.getVoiceChannel(), data[1], true);
         } else {
           event.getVoiceChannel().join();
           String url = "http://brianstrains.com/train3.mp3";
-          scheduler.loadTracks(event.getUser(), url, true);
-          dbManager
-              .setLeave(username, url);
+          scheduler.loadTracks(event.getVoiceChannel(), url, true);
+          dbManager.setLeave(username, url);
         }
       } catch (SQLException e) {
         dbManager.reconnect();

@@ -5,9 +5,8 @@ import com.bri64.discord.commands.music.MusicCommand;
 
 public class RebootCommand extends MusicCommand {
 
-  public RebootCommand(CommandEvent event,
-      MusicScheduler scheduler) {
-    super(event, scheduler, false);
+  public RebootCommand(CommandEvent event, MusicScheduler scheduler) {
+    super(event, scheduler);
   }
 
 

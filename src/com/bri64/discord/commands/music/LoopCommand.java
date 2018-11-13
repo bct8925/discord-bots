@@ -10,14 +10,14 @@ import com.bri64.discord.commands.error.NotConnectedError;
 @SuppressWarnings("Duplicates")
 public class LoopCommand extends MusicCommand {
 
-  public LoopCommand(final CommandEvent event, final MusicScheduler scheduler, boolean force) {
-    super(event, scheduler, force);
+  public LoopCommand(final CommandEvent event, final MusicScheduler scheduler) {
+    super(event, scheduler);
   }
 
   @Override
   public void execute() {
     // Manual override
-    if (force) {
+    if (shouldForce()) {
       valid();
       return;
     }
@@ -66,6 +66,6 @@ public class LoopCommand extends MusicCommand {
   @Override
   public void invalidArgs() {
     BotUtils.sendMessage(getUser().mention() + " " + "Invalid arguments! Usage: loop none|one|all",
-        getUser().getOrCreatePMChannel());
+        getOutChannel());
   }
 }

@@ -8,14 +8,14 @@ import com.bri64.discord.commands.error.NotConnectedError;
 
 public class SeekCommand extends MusicCommand {
 
-  public SeekCommand(final CommandEvent event, final MusicScheduler scheduler, boolean force) {
-    super(event, scheduler, force);
+  public SeekCommand(final CommandEvent event, final MusicScheduler scheduler) {
+    super(event, scheduler);
   }
 
   @Override
   public void execute() {
     // Manual override
-    if (force) {
+    if (shouldForce()) {
       valid();
       return;
     }
@@ -48,13 +48,13 @@ public class SeekCommand extends MusicCommand {
     if (!scheduler.seek(search)) {
       BotUtils.sendMessage(
           getUser().mention() + " " + "Track containing \"" + search + "\" not found in queue!",
-          getUser().getOrCreatePMChannel());
+          getOutChannel());
     }
   }
 
   @Override
   public void invalidArgs() {
     BotUtils.sendMessage(getUser().mention() + " " + "Invalid arguments! Usage: seek query",
-        getUser().getOrCreatePMChannel());
+        getOutChannel());
   }
 }

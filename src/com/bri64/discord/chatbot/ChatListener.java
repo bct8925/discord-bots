@@ -45,17 +45,17 @@ public class ChatListener extends MessageListener {
 
     // Set Join
     else if (command.equalsIgnoreCase(bot.getSymbol() + "join")) {
-      new JoinLeaveDBCommand(event, database, true, false).execute();
+      new JoinLeaveDBCommand(event, scheduler, database, true).execute();
     }
 
     // Set Leave
     else if (command.equalsIgnoreCase(bot.getSymbol() + "leave")) {
-      new JoinLeaveDBCommand(event, database, false, false).execute();
+      new JoinLeaveDBCommand(event, scheduler, database, false).execute();
     }
 
     // Kill
     else if (command.equalsIgnoreCase(bot.getSymbol() + "kill")) {
-      new KillCommand(event, scheduler, false).execute();
+      new KillCommand(event, scheduler).execute();
     }
 
     // Else

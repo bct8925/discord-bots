@@ -15,15 +15,15 @@ public class PlayDBCommand extends MusicCommand {
   private DBManager database;
 
   public PlayDBCommand(final CommandEvent event, final MusicScheduler scheduler,
-      final DBManager database, boolean force) {
-    super(event, scheduler, force);
+      final DBManager database) {
+    super(event, scheduler);
     this.database = database;
   }
 
   @Override
   public void execute() {
     // Manual override
-    if (force) {
+    if (shouldForce()) {
       valid();
       return;
     }
@@ -62,7 +62,12 @@ public class PlayDBCommand extends MusicCommand {
 
       // Command exists
       if (url != null) {
-        scheduler.loadTracks(getUser(), url, false);
+        if (!scheduler.validateURL(url)) {
+          BotUtils.sendMessage(getUser().mention() + " Error loading audio for \" " + url + " \"!",
+              getOutChannel());
+          return;
+        }
+        scheduler.loadTracks(getVoiceChannel(), url, false);
       }
 
       // Command not found
