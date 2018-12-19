@@ -71,7 +71,8 @@ public class ChannelListener {
       public void run() {
         if (BotUtils.isAlone(
             bot.getUser(),
-            BotUtils.getConnectedChannel(bot.getGuild(), bot.getUser()))) {
+            BotUtils.getConnectedChannel(bot.getGuild(), bot.getUser()))
+            && bot.isLonely()) {
           BotUtils.log(bot, "Lonely, disconnecting...");
           new KillCommand(new CommandEvent(bot.getGuild(), null, null, null, null, null, true),
               scheduler).execute();

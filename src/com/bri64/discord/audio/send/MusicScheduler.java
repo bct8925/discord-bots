@@ -41,6 +41,10 @@ public class MusicScheduler extends AudioEventAdapter {
     return (playlist != null) ? playlist.playlistInfo() : "No playlist queued!";
   }
 
+  public String[] getNextSongs() {
+    return (playlist != null) ? playlist.getNextSongs() : new String[]{"", "", "", "", ""};
+  }
+
   public boolean isPaused() {
     return paused;
   }
@@ -51,6 +55,13 @@ public class MusicScheduler extends AudioEventAdapter {
 
   public void setLoop(LoopMode loop) {
     this.loopMode = loop;
+  }
+
+  public void updateLoop(LoopMode loop) {
+    setLoop(loop);
+    bot.dispatch(new PlaylistChangedEvent(bot.getGuild(),
+        (playlist != null) ? playlist.getCurrent() : null,
+        false, false));
   }
 
   public void setShuffle(boolean shuffle) {
@@ -257,7 +268,14 @@ public class MusicScheduler extends AudioEventAdapter {
   }
 
   public boolean seek(String search) {
-    return (playlist != null) && playlist.seek(audioPlayer, search);
+    if (playlist == null) {
+      return false;
+    }
+    if (playlist.seek(audioPlayer, search)) {
+      bot.dispatch(new PlaylistChangedEvent(bot.getGuild(), playlist.getCurrent(), false, false));
+      return true;
+    }
+    return false;
   }
 
   public void kill() {

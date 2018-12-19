@@ -4,6 +4,7 @@ import com.bri64.discord.DBManager;
 import com.bri64.discord.MessageListener;
 import com.bri64.discord.audio.send.MusicScheduler;
 import com.bri64.discord.commands.CommandEvent;
+import com.bri64.discord.commands.LonelyCommand;
 import com.bri64.discord.commands.db.AddDBCommand;
 import com.bri64.discord.commands.db.PlayDBCommand;
 import com.bri64.discord.commands.music.JoinCommand;
@@ -42,6 +43,7 @@ public class ChillListener extends MessageListener {
       "\t'remove' = Remove current track from queue\n" +
       "\t'volume percent' = Change volume percent (1-50)\n" +
       "\t'add command url' = [Admin] Add a new command to the database\n" +
+      "\t'lonely' = Toggle autokick\n" +
       "\t'kill' = Clear queue and kick ChillBot from channel" +
       "```";
   private ChillBot bot;
@@ -132,6 +134,11 @@ public class ChillListener extends MessageListener {
     // Add
     else if (command.equalsIgnoreCase(bot.getSymbol() + "add")) {
       new AddDBCommand(event, database).execute();
+    }
+
+    // Lonely
+    else if (command.equalsIgnoreCase(bot.getSymbol() + "lonely")) {
+      new LonelyCommand(event, bot).execute();
     }
 
     // Kill

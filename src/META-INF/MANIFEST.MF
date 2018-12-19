@@ -1,0 +1,40 @@
+Manifest-Version: 1.0
+Class-Path: kotlin-stdlib-1.3.11.jar jackson-databind-2.9.7.jar kotson
+ -2.5.0.jar jetty-client-9.4.8.v20171121.jar alpn-api-1.1.3.v20160715.
+ jar kotlinx-io-0.1.0.jar jackson-module-afterburner-2.9.2.jar ktor-se
+ rver-core-1.0.0.jar Discord4J-2.10.1.jar httpcore-4.4.8.jar json-2017
+ 0516.jar ktor-server-jetty-1.0.0.jar ktor-http-1.0.0.jar http2-hpack-
+ 9.4.11.v20180605.jar javax.servlet-api-3.1.0.jar kotlinx-coroutines-c
+ ore-1.0.1.jar httpclient-4.5.4.jar lavaplayer-common-1.0.6.jar mp3spi
+ -1.9.5.4.jar commons-codec-1.10.jar kotlin-logging-1.5.4.jar kotlin-s
+ tdlib-common-1.3.11.jar core-0.3.14.jar galimatias-0.2.1.jar ktor-uti
+ ls-1.0.0.jar slf4j-api-1.7.25.jar atomicfu-common-0.11.12.jar lavapla
+ yer-natives-1.2.55.jar kotlinx-coroutines-io-jvm-0.1.0.jar jetty-alpn
+ -openjdk8-server-9.4.11.v20180605.jar http2-common-9.4.11.v20180605.j
+ ar commons-text-1.2.jar reflections-0.9.11.jar shoebox-0.2.27.jar cac
+ hed-property-kotlin-0.1.0.jar tritonus-dsp-0.3.6.jar jetty-alpn-serve
+ r-9.4.11.v20180605.jar jsoup-1.11.2.jar lavaplayer-1.3.7.jar http2-se
+ rver-9.4.11.v20180605.jar ktor-server-servlet-1.0.0.jar commons-lang3
+ -3.7.jar okhttp-3.10.0.jar httpmime-4.5.4.jar tritonus-share-0.3.7.4.
+ jar ktor-utils-jvm-1.0.0.jar jorbis-0.0.17.jar jetty-util-9.4.14.v201
+ 81114.jar jetty-continuation-9.4.11.v20180605.jar kotlin-stdlib-jdk8-
+ 1.3.11.jar websocket-api-9.4.8.v20171121.jar javassist-3.21.0-GA.jar 
+ ktor-http-cio-1.0.0.jar kotlinx-coroutines-jdk8-1.0.1.jar typetools-0
+ .5.0.jar jetty-server-9.4.14.v20181114.jar jetty-xml-9.4.8.v20171121.
+ jar config-1.3.1.jar kotlin-reflect-1.3.10.jar junit-3.8.2.jar gson-j
+ avatime-serialisers-1.1.1.jar mysql-connector-java-6.0.6.jar ktor-ser
+ ver-host-common-1.0.0.jar jflac-codec-1.5.2.jar guava-20.0.jar websoc
+ ket-client-9.4.8.v20171121.jar jna-4.5.0.jar kotlinx-io-jvm-0.1.0.jar
+  kotlinx-coroutines-io-0.1.0.jar sphinx4-core.jar base64-2.3.9.jar kt
+ or-network-1.0.0.jar annotations-13.0.jar kotlin-stdlib-jdk7-1.3.11.j
+ ar jetty-servlets-9.4.11.v20180605.jar jetty-http-9.4.14.v20181114.ja
+ r jetty-alpn-java-server-9.4.11.v20180605.jar jlayer-1.0.1.4.jar jack
+ son-core-2.9.7.jar koloboke-impl-common-jdk8-1.0.0.jar jackson-annota
+ tions-2.9.0.jar koloboke-api-jdk8-1.0.0.jar kotlinx-coroutines-core-c
+ ommon-1.0.1.jar jetty-io-9.4.14.v20181114.jar ktor-websockets-1.0.0.j
+ ar websocket-common-9.4.8.v20171121.jar commons-io-2.6.jar barbary-wa
+ tchservice-1.0.jar okio-1.14.0.jar emoji-java-4.0.0.jar hotswap-agent
+ -core-1.1.0.jar gson-2.8.2.jar ktor-http-jvm-1.0.0.jar commons-loggin
+ g-1.2.jar icu4j-53.1.jar
+Main-Class: com.bri64.discord.BotLauncher
+

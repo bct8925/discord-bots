@@ -49,13 +49,13 @@ public class LoopCommand extends MusicCommand {
     String mode = getMessage().split(" ")[1];
     switch (mode.toLowerCase()) {
       case "none":
-        scheduler.setLoop(LoopMode.NONE);
+        scheduler.updateLoop(LoopMode.NONE);
         break;
       case "one":
-        scheduler.setLoop(LoopMode.ONE);
+        scheduler.updateLoop(LoopMode.ONE);
         break;
       case "all":
-        scheduler.setLoop(LoopMode.ALL);
+        scheduler.updateLoop(LoopMode.ALL);
         break;
       default:
         invalidArgs();

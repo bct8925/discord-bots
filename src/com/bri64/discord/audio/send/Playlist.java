@@ -128,6 +128,21 @@ public class Playlist {
     return result.toString();
   }
 
+  public String[] getNextSongs() {
+    int start = (!isLast()) ? tracks.indexOf(current) + 1 : 0;
+    return getNextSongs(start);
+  }
+
+  public String[] getNextSongs(int start) {
+    int end = start + ((tracks.size() - start >= 5) ? 5 : tracks.size() - start);
+    int size = end - start;
+    String[] result = new String[]{"", "", "", "", ""};
+    for (int i = 0; i < size; i++) {
+      result[i] = (start + i + 1) + ". " + tracks.get(i + start).getTitle();
+    }
+    return result;
+  }
+
   public boolean isFirst() {
     return current != null && current.equals(tracks.getFirst());
   }

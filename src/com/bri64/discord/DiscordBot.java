@@ -24,6 +24,7 @@ public abstract class DiscordBot {
   protected List<IGuild> guilds;
   protected String symbol;
   protected boolean ready;
+  protected boolean lonely;
 
   protected DiscordBot(final String symbol, final String token) {
     this.symbol = symbol;
@@ -49,6 +50,8 @@ public abstract class DiscordBot {
         updateStatus();
       }
     }, 3000, 2000);
+
+    this.lonely = true;
   }
 
   public abstract IGuild getGuild();
@@ -70,6 +73,14 @@ public abstract class DiscordBot {
 
   public boolean isReady() {
     return ready;
+  }
+
+  public boolean isLonely() {
+    return lonely;
+  }
+
+  public void setLonely(boolean lonely) {
+    this.lonely = lonely;
   }
 
   private void login() {
