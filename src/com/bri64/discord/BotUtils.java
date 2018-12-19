@@ -11,7 +11,6 @@ import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.util.RequestBuffer;
 
-@SuppressWarnings("WeakerAccess")
 public class BotUtils {
 
   public static void log(DiscordBot main, String message) {
@@ -64,6 +63,9 @@ public class BotUtils {
   }
 
   public static boolean isAlone(IUser user, IVoiceChannel channel) {
+    if (channel == null) {
+      return false;
+    }
     List<IUser> connectedUsers = channel.getConnectedUsers();
     return connectedUsers.contains(user) && connectedUsers.size() == 1;
   }
