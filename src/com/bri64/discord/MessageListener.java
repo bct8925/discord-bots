@@ -2,6 +2,7 @@ package com.bri64.discord;
 
 import com.bri64.discord.commands.CommandEvent;
 import com.bri64.discord.commands.HelpCommand;
+import com.bri64.discord.commands.RebootCommand;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MentionEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -47,9 +48,7 @@ public abstract class MessageListener {
   public void onShardDisconnect(DisconnectedEvent event) {
     if (!event.getReason().equals(Reason.LOGGED_OUT)) {
       BotUtils.log(bot, "Connection Error: " + event.getReason().name());
-      BotUtils.log(bot, "Rebooting system...");
-      bot.reboot();
-      BotUtils.log(bot, "Rebooted!");
+      new RebootCommand(null, bot).execute();
     }
   }
 

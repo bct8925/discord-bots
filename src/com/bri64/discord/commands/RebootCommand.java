@@ -1,5 +1,6 @@
 package com.bri64.discord.commands;
 
+import com.bri64.discord.BotUtils;
 import com.bri64.discord.DiscordBot;
 
 public class RebootCommand extends DiscordCommand {
@@ -14,9 +15,9 @@ public class RebootCommand extends DiscordCommand {
 
   @Override
   public void execute() {
-    System.out.println("Rebooting system...");
+    BotUtils.log(bot, "Rebooting system...");
     bot.reboot();
-    System.out.println("Rebooted!");
+    BotUtils.log(bot, "Rebooted!");
   }
 
 }
