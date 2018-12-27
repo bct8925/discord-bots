@@ -7,8 +7,6 @@ import org.apache.commons.text.StringEscapeUtils;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.Event;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.obj.ActivityType;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
@@ -23,7 +21,6 @@ public abstract class DiscordBot {
   protected String status;
   protected List<IGuild> guilds;
   protected String symbol;
-  protected boolean ready;
   protected boolean lonely;
 
   protected DiscordBot(final String symbol, final String token) {
@@ -34,7 +31,6 @@ public abstract class DiscordBot {
     client.getDispatcher().registerListener(this);
 
     // Login and wait for connection
-    this.ready = false;
     login();
 
     // Set guilds
@@ -72,7 +68,7 @@ public abstract class DiscordBot {
   }
 
   public boolean isReady() {
-    return ready;
+    return client.isReady();
   }
 
   public boolean isLonely() {
@@ -86,14 +82,14 @@ public abstract class DiscordBot {
   private void login() {
     client.login();
     BotUtils.log(this, "Initializing...");
-    while (!ready) {
+    while (!client.isReady()) {
       BotUtils.waiting();
     }
     BotUtils.log(this, "Ready!");
   }
 
   public void updateStatus() {
-    if (ready) {
+    if (client.isReady()) {
       if (status != null) {
         RequestBuffer.request(() ->
             client.changePresence(StatusType.ONLINE, ActivityType.LISTENING, status));
@@ -139,10 +135,5 @@ public abstract class DiscordBot {
         }
       });
     }
-  }
-
-  @EventSubscriber
-  public void onReady(ReadyEvent event) {
-    ready = true;
   }
 }

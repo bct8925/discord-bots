@@ -44,8 +44,7 @@ public class ChatBot extends DiscordBot {
 
   @Override
   public void reboot() {
-    ready = false;
-    while (!ready) {
+    while (!client.isReady()) {
       BotUtils.waiting();
     }
 

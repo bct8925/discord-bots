@@ -53,8 +53,7 @@ public class ChillBot extends DiscordBot {
   public void reboot() {
     musicScheduler.pause(true);
 
-    ready = false;
-    while (!ready) {
+    while (!client.isReady()) {
       BotUtils.waiting();
     }
 

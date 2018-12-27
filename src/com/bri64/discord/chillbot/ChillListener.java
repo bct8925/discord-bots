@@ -5,6 +5,7 @@ import com.bri64.discord.MessageListener;
 import com.bri64.discord.audio.send.MusicScheduler;
 import com.bri64.discord.commands.CommandEvent;
 import com.bri64.discord.commands.LonelyCommand;
+import com.bri64.discord.commands.RebootCommand;
 import com.bri64.discord.commands.db.AddDBCommand;
 import com.bri64.discord.commands.db.PlayDBCommand;
 import com.bri64.discord.commands.music.JoinCommand;
@@ -68,6 +69,12 @@ public class ChillListener extends MessageListener {
     // Join
     if (command.equalsIgnoreCase(bot.getSymbol() + "join")) {
       new JoinCommand(event, bot, scheduler).execute();
+    }
+
+    // TODO
+    // Reboot
+    else if (command.equalsIgnoreCase(bot.getSymbol() + "reboot")) {
+      new RebootCommand(event, bot).execute();
     }
 
     // Play

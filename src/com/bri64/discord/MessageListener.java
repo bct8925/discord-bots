@@ -5,6 +5,8 @@ import com.bri64.discord.commands.HelpCommand;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MentionEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.shard.DisconnectedEvent;
+import sx.blah.discord.handle.impl.events.shard.DisconnectedEvent.Reason;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
@@ -41,7 +43,7 @@ public abstract class MessageListener {
         message, false));
   }
 
-  /*@EventSubscriber
+  @EventSubscriber
   public void onShardDisconnect(DisconnectedEvent event) {
     if (!event.getReason().equals(Reason.LOGGED_OUT)) {
       BotUtils.log(bot, "Connection Error: " + event.getReason().name());
@@ -49,7 +51,7 @@ public abstract class MessageListener {
       bot.reboot();
       BotUtils.log(bot, "Rebooted!");
     }
-  }*/
+  }
 
   @EventSubscriber
   public abstract void onCommand(CommandEvent event);

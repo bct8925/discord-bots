@@ -1,21 +1,21 @@
 package com.bri64.discord.commands;
 
-import com.bri64.discord.audio.send.MusicScheduler;
-import com.bri64.discord.commands.music.MusicCommand;
+import com.bri64.discord.DiscordBot;
 
-public class RebootCommand extends MusicCommand {
+public class RebootCommand extends DiscordCommand {
 
-  public RebootCommand(CommandEvent event, MusicScheduler scheduler) {
-    super(event, scheduler);
+  private DiscordBot bot;
+
+  public RebootCommand(CommandEvent event, DiscordBot bot) {
+    super(event);
+    this.bot = bot;
   }
 
 
   @Override
   public void execute() {
     System.out.println("Rebooting system...");
-    scheduler.pause(true);
-    scheduler.initAudio();
-    scheduler.pause(false);
+    bot.reboot();
     System.out.println("Rebooted!");
   }
 
