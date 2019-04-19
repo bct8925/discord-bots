@@ -1,6 +1,8 @@
-# discord-bots
-ChillBot: A multi-purpose music streaming bot!
+# discord-bots 
+NOTE: Deprecated, see https://github.com/bct8925/chillbot.js
 
-FortBot: Automatically tracking Fortnite wins and stats!
+- ChillBot: A multi-purpose music streaming bot!
 
-ChatBot: Setting your join and leave ringtones!
+- FortBot: Automatically tracking Fortnite wins and stats!
+
+- ChatBot: Setting your join and leave ringtones!
